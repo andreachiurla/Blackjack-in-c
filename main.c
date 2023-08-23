@@ -57,7 +57,8 @@ int main() {
         //askBets(bets, nome, nGiocatori);
 
         distribuisciCarte(mazzoCarte, &game);
-        printf("\npunteggi[0]: %d\n", game.giocatori[0].punteggi);
+        printf("\n");
+        printPoints(&game);
         checkBlackjackAtFirstMano(&game);
 
         printf("\n");

@@ -344,13 +344,12 @@ void checkBlackjackAtFirstMano(Game *game){
 void printPoints(Game *game){
     printf("Banco: ");
     if(game->giocatori[0].punteggi == -1){
-        printf("BLACKJACK!");
+        printf("BLACKJACK!\n");
     }else if(game->giocatori[0].isAsso == 0){
         printf("%d", game->giocatori[0].punteggi);
     }else {
         printf("%d / %d", game->giocatori[0].punteggi, game->giocatori[0].punteggi + 10);
     }
-
     printf("\n");
 
     for (int i = 1; i < game->nGiocatori + 1; ++i) {
@@ -364,6 +363,7 @@ void printPoints(Game *game){
         }else{
             printf("%d / %d", game->giocatori[i].punteggi, game->giocatori[i].punteggi + 10);
         }
+        printf("\n");
     }
 }
 
