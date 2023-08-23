@@ -440,6 +440,7 @@ void actionStai(Game *game){
  */
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     char carta[3];
+    int cardValue;
 
     pescaCarta(mazzo, carta);
 
@@ -447,9 +448,12 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 
     printf("\n");
 
-    updatePlayerPoints(game, cardValueOf(carta), giocatore);
+    // se viene pescato l'asso e il punteggio del giocatore supererebbe 21 (con +11), l'asso vale 1
+    if((cardValue = cardValueOf(carta)) == 11 && game->giocatori[giocatore].punteggio + 11 > 21){
+        cardValue = 1;
+    }
 
-    printf("%s, hai %d punti\n", game->giocatori[giocatore - 1].nome, game->giocatori[giocatore].punteggio);
+    updatePlayerPoints(game, cardValue, giocatore);
 
-    //updatePlayerPoints(punteggio, player, cardValueOf(carta), areSameCards, manyPlayerCards);
+    //printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
 }
