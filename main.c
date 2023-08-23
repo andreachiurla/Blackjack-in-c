@@ -38,7 +38,11 @@ int main() {
         return 1;
     }
 
-    //chiedo il numero e i nomi dei nome
+
+    strcpy(game.giocatori[0].nome, "Banco");
+    game.giocatori[0].manyPlayerCards = 2;
+
+    // chiedo il numero e i nomi dei giocatori
     game.nGiocatori = askPlayersName(&game);
     printPlayersName(&game);
 
