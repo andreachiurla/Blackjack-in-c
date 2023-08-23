@@ -18,7 +18,7 @@ int askPlayersName(Game * game){
 
     // chiede il numero di nome
     while(1){
-        printf("Quanti nome? ");
+        printf("Quanti giocatori? ");
 
         // uso la fgets per evitare problemi e bug con la scanf
         fgets(strIn, 30, stdin);
@@ -392,12 +392,6 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
                 case 'P':
                     actionPrendiCarta(mazzo, game, i);
                     break;
-                case 'R':
-                    actionRaddoppia(game);
-                    break;
-                case 'D':
-                    actionDividi(game);
-                    break;
                 case 'S':
                     actionStai(game);
                     break;
@@ -434,16 +428,6 @@ void actionStai(Game *game){
 /*
  *
  */
-void actionDividi(Game *game){
-
-    printf("TODO implement actionDividi\n");
-
-    //updatePlayerPoints(punteggi, player, cardValueOf(carta), areSameCards, manyPlayerCards);
-}
-
-/*
- *
- */
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     char carta[3];
 
@@ -456,18 +440,6 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     updatePlayerPoints(game, cardValueOf(carta), giocatore);
 
     printf("%s, hai %d punti\n", game->giocatori[giocatore - 1].nome, game->giocatori[giocatore].punteggi);
-
-    //updatePlayerPoints(punteggi, player, cardValueOf(carta), areSameCards, manyPlayerCards);
-}
-
-/*
- *
- */
-void actionRaddoppia(Game *game){
-
-    printf("TODO implement actionRaddoppia\n");
-
-    // !! RADDOPPIA LA PUNTATA !!
 
     //updatePlayerPoints(punteggi, player, cardValueOf(carta), areSameCards, manyPlayerCards);
 }
