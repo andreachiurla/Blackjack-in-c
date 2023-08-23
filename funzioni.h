@@ -6,6 +6,7 @@
 #define NGIOCATORIMAX 6
 #define MONEY 30
 
+// definizione strutture
 typedef struct {
     char nome[NOMEGIOCATOREMAXLEN];
     int money;           // quanti soldi ha ogni singolo giocatore
@@ -20,6 +21,7 @@ typedef struct{
     Giocatore giocatori[NGIOCATORIMAX];
 }Game;
 
+// definizione funzioni
 void checkBlackjackAtFirstManche(Game *game);
 void distribuisciCarte(FILE *mazzo, Game *game);
 void askBets(Game *game);
