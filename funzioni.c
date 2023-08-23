@@ -266,6 +266,8 @@ void distribuisciCarte(FILE *mazzo, Game *game){
             if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;         //  NON VAAAAAA
 
             sleep(1);   // per non far estrarre le stesse carte
+
+            printf("\n");
         }
     }
 }
@@ -314,6 +316,7 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
 
     // incremento la quantità di carte che ha il giocatore
     game->giocatori[player].manyPlayerCards++;
+    // printf("updatePlayerPoints: punteggio=%d, manyPlayerCards=%d\n", game->giocatori[player].punteggio, game->giocatori[player].manyPlayerCards);
 }
 
 /*
@@ -430,8 +433,7 @@ int checkPoints(Game *game){
  *
  */
 void actionStai(Game *game){
-    printf("TODO implement actionStai\n");
-
+    printf("TO-DO implement actionStai\n");
     // updatePlayerPoints(game, cardValueOf(carta), );
 }
 

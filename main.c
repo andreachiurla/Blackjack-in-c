@@ -55,7 +55,6 @@ int main() {
 
         checkBlackjackAtFirstManche(&game);
         printPoints(&game);
-        checkBlackjackAtFirstManche(&game);
 
         printf("\n");
 
@@ -63,7 +62,6 @@ int main() {
 
         if(checkPoints(&game) == 1) {
             printf("Banco ha sbancato");
-            break;
         }
 
         printf("\n");
