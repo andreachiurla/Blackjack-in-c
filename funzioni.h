@@ -39,3 +39,4 @@ void askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void actionStai(Game *game);
 void bancoBlackjackAtFirstManche(Game *game);
+void bancoPlays(Game *game);

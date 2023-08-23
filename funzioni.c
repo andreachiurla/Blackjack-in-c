@@ -457,3 +457,10 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 
     //printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
 }
+
+/*
+ *
+ */
+void bancoPlays(Game *game){
+
+}
