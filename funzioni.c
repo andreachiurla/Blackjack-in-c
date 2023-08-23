@@ -12,7 +12,7 @@
  */
 int askPlayersName(Game * game){
     int nGiocatori;
-    int temp = 0;
+    int temp = 1;
     char trash;
     char strIn[30];
 
@@ -38,23 +38,23 @@ int askPlayersName(Game * game){
     // se parteciperà un solo giocatore non vengono effettuati controlli
     if(nGiocatori == 1){
         printf("Inserire il nome del giocatore: ");
-        memset(game->giocatori[0].nome, 0, NOMEGIOCATOREMAXLEN);
-        fgets(game->giocatori[0].nome, NOMEGIOCATOREMAXLEN, stdin);
+        memset(game->giocatori[1].nome, 0, NOMEGIOCATOREMAXLEN);
+        fgets(game->giocatori[1].nome, NOMEGIOCATOREMAXLEN, stdin);
     }
     else if(nGiocatori > 1){
         // nel caso ci sia più di un giocatore entra nel ciclo che chiede il nome e controlla che non sia uguale a uno già inserito
         printf("\nInserire il nome di ciascun giocatore.\n");
-        while(temp < nGiocatori){
-            printf("Giocatore %d: ", temp + 1);
+        while(temp <= nGiocatori){
+            printf("Giocatore %d: ", temp);
             memset(game->giocatori[temp].nome, 0, NOMEGIOCATOREMAXLEN);
             fgets(game->giocatori[temp].nome, NOMEGIOCATOREMAXLEN, stdin);
             printf("Immesso: %s\n", game->giocatori[temp].nome);
 
             // se è stato appena chiesto il nome al primo giocatore non vengono effettuati controlli
-            if(temp == 0) {
+            if(temp == 1) {
                 temp++;
             }else{
-                for(int i = 0; i < temp; ++i) {
+                for(int i = 1; i < temp; ++i) {
                     if(strcasecmp(game->giocatori[i].nome, game->giocatori[temp].nome) == 0) {    // utilizzo strcasecmp perché non è case-sensitive -> paolo e PaoLo li considera uguali
                         printf("Giocatore %d, inserisci un nome diverso dal giocatore %d.\n", temp + 1, i + 1);
                         temp--;
@@ -68,7 +68,7 @@ int askPlayersName(Game * game){
     }
 
     // sostituisce il '\n' nelle stringhe con '\0'
-    for (int i = 0; i < nGiocatori; ++i) {
+    for (int i = 1; i <= nGiocatori; ++i) {
         game->giocatori[i].nome[strcspn(game->giocatori[i].nome, "\n")] = '\0';
     }
 
@@ -77,7 +77,7 @@ int askPlayersName(Game * game){
 
 void printPlayersName(Game *game) {
     for(int giocatore = 1; giocatore <= game->nGiocatori; giocatore++) {
-        printf("Giocatore n. %d: %s\n", giocatore, game->giocatori[giocatore - 1].nome);
+        printf("Giocatore n. %d: %s\n", giocatore, game->giocatori[giocatore].nome);
     }
 }
 
