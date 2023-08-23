@@ -52,12 +52,15 @@ int main() {
 
         distribuisciCarte(mazzoCarte, &game);
         printf("\n");
+
+        checkBlackjackAtFirstManche(&game);
         printPoints(&game);
         checkBlackjackAtFirstManche(&game);
 
         printf("\n");
 
         askAndExecuteAction(mazzoCarte, &game);
+
         if(checkPoints(&game) == 1) {
             printf("Banco ha sbancato");
             break;
@@ -66,6 +69,8 @@ int main() {
         printf("\n");
         printPoints(&game);
         printf("\n");
+
+        bancoPlays(&game);
 
         playing = keepPlaying();
     }
