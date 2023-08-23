@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 int main() {
     printf("Blackjack by Chiurla Andrea\n\n");
 
@@ -17,7 +18,7 @@ int main() {
     int manyPlayerCards[NGIOCATORIMAX] = {2, 2, 2, 2, 2, 2};
     int isAsso[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};     // se tra le carte del giocatore c'è un asso, per mostrare i due punteggi possibili
     int punteggi[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};
-    char giocatori[NGIOCATORIMAX][DIM];        // array di stringhe - nomi dei giocatori
+    char nome[NGIOCATORIMAX][NOMEGIOCATOREMAXLEN];        // array di stringhe - nomi dei nome
 */
 
     FILE *mazzoCarte;                       // puntatore al file in cui vengono memorizzate le carte uscite.
@@ -47,21 +48,25 @@ int main() {
         return 1;
     }
 
-    //chiedo il numero e i nomi dei giocatori
-    game.nGiocatori = playersName(game.giocatori);
+    //chiedo il numero e i nomi dei nome
+    game.nGiocatori = askPlayersName(&game);
+    printPlayersName(&game);
 
     // ciclo essenziale del gioco, ogni iterazione è una manche
     while(playing){
-        //askBets(bets, giocatori, nGiocatori);
+        //askBets(bets, nome, nGiocatori);
 
         distribuisciCarte(mazzoCarte, &game);
-        printf("\npunteggi[0]: %d\n", game.punteggi[0]);
-        isBlackjack(&game);
+        printf("\npunteggi[0]: %d\n", game.giocatori[0].punteggi);
+        checkBlackjackAtFirstMano(&game);
 
         printf("\n");
 
         askAndExecuteAction(mazzoCarte, &game);
-        checkPoints(&game);
+        if(checkPoints(&game) == 1) {
+            printf("Banco ha sbancato");
+            break;
+        }
 
         printf("\n");
         printPoints(&game);
@@ -74,3 +79,4 @@ int main() {
 
     return 0;
 }
+
