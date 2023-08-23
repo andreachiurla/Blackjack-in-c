@@ -324,9 +324,9 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
  */
 void checkBlackjackAtFirstManche(Game *game){
     // per ogni giocatore, se hanno ottenuto un punteggio uguale a 21, con solo due carte hanno fatto sicuramente blackjack
-    for(int i = 0; i < game->nGiocatori; ++i) {
-        if(game->giocatori[i].punteggio == 21 && game->giocatori[i].manyPlayerCards == 2){
-            game->giocatori[i].punteggio = -1;
+    for(int giocatore = 0; giocatore < game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio == 21 && game->giocatori[giocatore].manyPlayerCards == 2){
+            game->giocatori[giocatore].punteggio = -1;
         }
     }
 
@@ -352,26 +352,22 @@ void bancoBlackjackAtFirstManche(Game *game){
  *
  */
 void printPoints(Game *game){
-    printf("Banco: ");
-    if(game->giocatori[0].punteggio == -1){
-        printf("BLACKJACK!\n");
-    }else if(game->giocatori[0].isAsso == 0){
-        printf("%d", game->giocatori[0].punteggio);
-    }else {
-        printf("%d / %d", game->giocatori[0].punteggio, game->giocatori[0].punteggio + 10);
-    }
-    printf("\n");
-
-    for (int i = 1; i < game->nGiocatori + 1; ++i) {
-        printf("%s: ", game->giocatori[i - 1].nome);
-        if(game->giocatori[i].punteggio == -1){
+    for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
+        printf("%s: ", game->giocatori[giocatore].nome);
+        if(game->giocatori[giocatore].punteggio == -1){
             printf("BLACKJACK!");
-        }else if(game->giocatori[i].isAsso == -2){
+        }else if(game->giocatori[giocatore].punteggio == -2){
             printf("Sbancato");
-        }else if(game->giocatori[i].isAsso == 0){
-            printf("%d", game->giocatori[i].punteggio);
+        }else if(game->giocatori[giocatore].isAsso == 0 || game->giocatori[giocatore].punteggio + 10 > 21){
+            printf("%d", game->giocatori[giocatore].punteggio);
+        }else if(giocatore == 0 && game->giocatori[giocatore].isAsso == 0){
+            if(game->giocatori[giocatore].punteggio + 10 >= 17){
+                printf("%d", game->giocatori[giocatore].punteggio + 10);
+            }else{
+                printf("%d", game->giocatori[giocatore].punteggio + 10);
+            }
         }else{
-            printf("%d / %d", game->giocatori[i].punteggio, game->giocatori[i].punteggio + 10);
+            printf("%d / %d", game->giocatori[giocatore].punteggio, game->giocatori[giocatore].punteggio + 10);
         }
         printf("\n");
     }
