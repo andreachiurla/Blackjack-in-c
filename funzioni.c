@@ -112,8 +112,8 @@ void askBets(Game *game){
     if(game->nGiocatori == 1){
         while(1){
             printf("%s, fai la tua puntata: ", game->giocatori[0].nome);
-            scanf("%d", &game->giocatori[0].bets);
-            if (game->giocatori[0].bets < 0 || game->giocatori[0].bets > 5) {
+            scanf("%d", &game->giocatori[0].bet);
+            if (game->giocatori[0].bet < 0 || game->giocatori[0].bet > 5) {
                 printf("Inserisci un valore compreso tra 1 e 5.\n");
             }else{
                 break;
@@ -123,9 +123,9 @@ void askBets(Game *game){
         printf("Fate la vostra puntata.\n");
         for(int i = 0; i < game->nGiocatori;){
             printf("%s: ", game->giocatori[i].nome);
-            scanf("%d", &game->giocatori[i].bets);
+            scanf("%d", &game->giocatori[i].bet);
 
-            if(game->giocatori[i].bets < 0 || game->giocatori[i].bets > 5){
+            if(game->giocatori[i].bet < 0 || game->giocatori[i].bet > 5){
                 printf("Inserisci un valore compreso tra 1 e 5.\n");
             }else{
                 ++i;
@@ -308,32 +308,49 @@ int cardValueOf(char carta[2]){
 /*
  * 1. updatePlayerPoints
  * 2. aggiorna le variabili che indicano la situazione della manche del giocatore
- * 3. riceve l'array con i punteggi dei nome, il numero del giocatore da aggiornare, il valore della carta e l'array che indica se ha due carte uguali (per dividere)
+ * 3. riceve l'array con i punteggio dei nome, il numero del giocatore da aggiornare, il valore della carta e l'array che indica se ha due carte uguali (per dividere)
  * 4. void
  */
 void updatePlayerPoints(Game *game, int cardValue, int player) {
     // se il valore delle due carte è uguali, il giocatore potrà dividere
-    if(game->giocatori[player].punteggi == cardValue) game->giocatori[player].areSameCards = true;
+    if(game->giocatori[player].punteggio == cardValue) game->giocatori[player].areSameCards = true;
 
     // aggiorno il punteggio attuale del giocatore
-    if (game->giocatori[player].punteggi == 0) game->giocatori[player].punteggi = cardValue;
-    else game->giocatori[player].punteggi += cardValue;
+    if (game->giocatori[player].punteggio == 0) game->giocatori[player].punteggio = cardValue;
+    else game->giocatori[player].punteggio += cardValue;
 
     // incremento la quantità di carte che ha il giocatore
     game->giocatori[player].manyPlayerCards++;
 }
 
 /*
- * 1. checkBlackjackAtFirstMano
+ * 1. checkBlackjackAtFirstManche
  * 2. controlla tutti i nome e vede se hanno fatto blackjack, controllando se ha due carte e il suo punteggio equivale a 21
- * 3. riceve l'array che indica quante carte hanno i nome, l'array con i punteggi e quanti nome ci sono
+ * 3. riceve l'array che indica quante carte hanno i nome, l'array con i punteggio e quanti nome ci sono
  * 4. void
  */
-void checkBlackjackAtFirstMano(Game *game){
+void checkBlackjackAtFirstManche(Game *game){
     // per ogni giocatore, se hanno ottenuto un punteggio uguale a 21, con solo due carte hanno fatto sicuramente blackjack
     for(int i = 0; i < game->nGiocatori; ++i) {
-        if(game->giocatori[i].punteggi == 21 && game->giocatori[i].manyPlayerCards == 2){
-            game->giocatori[i].punteggi = -1;
+        if(game->giocatori[i].punteggio == 21 && game->giocatori[i].manyPlayerCards == 2){
+            game->giocatori[i].punteggio = -1;
+        }
+    }
+
+    // gestire puntate se il banco ha fatto blackjack
+    if(game->giocatori[0].punteggio == -1){
+        bancoBlackjackAtFirstManche(game);
+    }
+}
+
+/*
+ *
+ */
+void bancoBlackjackAtFirstManche(Game *game){
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio == -1){
+            printf("%s hai pareggiato.\n", game->giocatori[giocatore].nome);
+            game->giocatori[giocatore].money += game->giocatori[giocatore].bet;
         }
     }
 }
@@ -343,25 +360,25 @@ void checkBlackjackAtFirstMano(Game *game){
  */
 void printPoints(Game *game){
     printf("Banco: ");
-    if(game->giocatori[0].punteggi == -1){
+    if(game->giocatori[0].punteggio == -1){
         printf("BLACKJACK!\n");
     }else if(game->giocatori[0].isAsso == 0){
-        printf("%d", game->giocatori[0].punteggi);
+        printf("%d", game->giocatori[0].punteggio);
     }else {
-        printf("%d / %d", game->giocatori[0].punteggi, game->giocatori[0].punteggi + 10);
+        printf("%d / %d", game->giocatori[0].punteggio, game->giocatori[0].punteggio + 10);
     }
     printf("\n");
 
     for (int i = 1; i < game->nGiocatori + 1; ++i) {
         printf("%s: ", game->giocatori[i - 1].nome);
-        if(game->giocatori[i].punteggi == -1){
+        if(game->giocatori[i].punteggio == -1){
             printf("BLACKJACK!");
         }else if(game->giocatori[i].isAsso == -2){
             printf("Sbancato");
         }else if(game->giocatori[i].isAsso == 0){
-            printf("%d", game->giocatori[i].punteggi);
+            printf("%d", game->giocatori[i].punteggio);
         }else{
-            printf("%d / %d", game->giocatori[i].punteggi, game->giocatori[i].punteggi + 10);
+            printf("%d / %d", game->giocatori[i].punteggio, game->giocatori[i].punteggio + 10);
         }
         printf("\n");
     }
@@ -376,8 +393,8 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
     char correctedAnswer;
 
     for (int i = 1; i <= game->nGiocatori; ++i) {
-        printf("%s, hai %d punti\n", game->giocatori[i - 1].nome, game->giocatori[i].punteggi);
-        if(game->giocatori[i].punteggi < 21){
+        printf("%s, hai %d punti\n", game->giocatori[i - 1].nome, game->giocatori[i].punteggio);
+        if(game->giocatori[i].punteggio < 21){
             if(game->giocatori[i].areSameCards){
                 printf("Stai, Prendi carta, Raddoppi o Dividi? (S/P/R/D)");
             }else{
@@ -404,14 +421,14 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
 
 /*
  * 1. checkPoints
- * 2. controlla tutti i punteggi dei nome a quelli che hanno sballato viene impostato il punteggio a -2 e il giocatore verrà riconosciuto come fuori dalla manche.
- * 3. riceve l'array con i punteggi e il numero dei nome
+ * 2. controlla tutti i punteggio dei nome a quelli che hanno sballato viene impostato il punteggio a -2 e il giocatore verrà riconosciuto come fuori dalla manche.
+ * 3. riceve l'array con i punteggio e il numero dei nome
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPoints(Game *game){
-    if(game->giocatori[0].punteggi > 21) return 1;
+    if(game->giocatori[0].punteggio > 21) return 1;
     for (int i = 1; i <= game->nGiocatori; ++i) {
-        if(game->giocatori[i].punteggi > 21) game->giocatori[i].punteggi = -2;
+        if(game->giocatori[i].punteggio > 21) game->giocatori[i].punteggio = -2;
     }
     return 0;
 }
@@ -439,7 +456,7 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 
     updatePlayerPoints(game, cardValueOf(carta), giocatore);
 
-    printf("%s, hai %d punti\n", game->giocatori[giocatore - 1].nome, game->giocatori[giocatore].punteggi);
+    printf("%s, hai %d punti\n", game->giocatori[giocatore - 1].nome, game->giocatori[giocatore].punteggio);
 
-    //updatePlayerPoints(punteggi, player, cardValueOf(carta), areSameCards, manyPlayerCards);
+    //updatePlayerPoints(punteggio, player, cardValueOf(carta), areSameCards, manyPlayerCards);
 }

@@ -9,9 +9,9 @@
 typedef struct {
     char nome[NOMEGIOCATOREMAXLEN];
     int money;           // quanti soldi ha ogni singolo giocatore
-    int bets;            // per ogni giocatore, le puntate del turno attuale
-    int punteggi;        // per ogni giocatore, il punteggio attuale
-    int isAsso;          // se tra le carte del giocatore c'è un asso, per mostrare i due punteggi possibili
+    int bet;            // per ogni giocatore, le puntate del turno attuale
+    int punteggio;        // per ogni giocatore, il punteggio attuale
+    int isAsso;          // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
     int manyPlayerCards; // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
     bool areSameCards;   // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
 } Giocatore;
@@ -21,7 +21,7 @@ typedef struct{
     Giocatore giocatori[NGIOCATORIMAX];
 }Game;
 
-void checkBlackjackAtFirstMano(Game *game);
+void checkBlackjackAtFirstManche(Game *game);
 void distribuisciCarte(FILE *mazzo, Game *game);
 void askBets(Game *game);
 int checkPoints(Game *game);
@@ -37,3 +37,4 @@ int cardValueOf(char carta[2]);
 void askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void actionStai(Game *game);
+void bancoBlackjackAtFirstManche(Game *game);

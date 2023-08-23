@@ -13,11 +13,11 @@ int main() {
 /*
     int nGiocatori;                         // numero di partecipanti
     int money[NGIOCATORIMAX] = {MONEY, MONEY, MONEY, MONEY, MONEY, MONEY};      // quanti soldi ha ogni singolo giocatore
-    int bets[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // puntate del turno attuale
+    int bet[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // puntate del turno attuale
     int areSameCards[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
     int manyPlayerCards[NGIOCATORIMAX] = {2, 2, 2, 2, 2, 2};
-    int isAsso[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};     // se tra le carte del giocatore c'è un asso, per mostrare i due punteggi possibili
-    int punteggi[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};
+    int isAsso[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};     // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
+    int punteggio[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};
     char nome[NGIOCATORIMAX][NOMEGIOCATOREMAXLEN];        // array di stringhe - nomi dei nome
 */
 
@@ -27,11 +27,11 @@ int main() {
     /*
     int nGiocatori;                         // numero di partecipanti
     int money[NGIOCATORIMAX] = {MONEY, MONEY, MONEY, MONEY, MONEY, MONEY};      // quanti soldi ha ogni singolo giocatore
-    int bets[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // puntate del turno attuale
+    int bet[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // puntate del turno attuale
     int areSameCards[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
     int manyPlayerCards[NGIOCATORIMAX] = {2, 2, 2, 2, 2, 2};
-    int isAsso[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};     // se tra le carte del giocatore c'è un asso, per mostrare i due punteggi possibili
-    int punteggi[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};
+    int isAsso[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};     // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
+    int punteggio[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};
 */
 
     // formatto il file del mazzo
@@ -54,12 +54,12 @@ int main() {
 
     // ciclo essenziale del gioco, ogni iterazione è una manche
     while(playing){
-        //askBets(bets, nome, nGiocatori);
+        //askBets(bet, nome, nGiocatori);
 
         distribuisciCarte(mazzoCarte, &game);
         printf("\n");
         printPoints(&game);
-        checkBlackjackAtFirstMano(&game);
+        checkBlackjackAtFirstManche(&game);
 
         printf("\n");
 
