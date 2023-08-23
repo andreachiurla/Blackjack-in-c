@@ -48,7 +48,7 @@ int main() {
 
     // ciclo essenziale del gioco, ogni iterazione è una manche
     while(playing){
-        //askBets(bet, nome, nGiocatori);
+        askBets(&game);
 
         distribuisciCarte(mazzoCarte, &game);
         printf("\n");

@@ -121,7 +121,7 @@ void askBets(Game *game){
         }
     }else{
         printf("Fate la vostra puntata.\n");
-        for(int i = 0; i < game->nGiocatori;){
+        for(int i = 1; i <= game->nGiocatori;){
             printf("%s: ", game->giocatori[i].nome);
             scanf("%d", &game->giocatori[i].bet);
 
