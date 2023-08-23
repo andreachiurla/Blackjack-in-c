@@ -376,33 +376,37 @@ void printPoints(Game *game){
 /*
  *
  */
-void askAndExecuteAction(FILE *mazzo, Game *game){
+int askAndExecuteAction(FILE *mazzo, Game *game){
     char dummy;
     char answer;
     char correctedAnswer;
 
-    for (int i = 1; i <= game->nGiocatori; ++i) {
-        printf("%s, hai %d punti\n", game->giocatori[i - 1].nome, game->giocatori[i].punteggio);
-        if(game->giocatori[i].punteggio < 21){
-            if(game->giocatori[i].areSameCards){
-                printf("Stai, Prendi carta, Raddoppi o Dividi? (S/P/R/D)");
-            }else{
-                printf("Stai, Prendi carta o Raddoppi? (S/P/R): ");
-            }
-            scanf("%c%c", &answer, &dummy);
-            correctedAnswer = toupper(answer);
-            if(correctedAnswer == 'D' && ! game->giocatori[i].areSameCards) {
-                correctedAnswer = ' ';
-            }
-            switch(correctedAnswer){
-                case 'P':
-                    actionPrendiCarta(mazzo, game, i);
-                    break;
-                case 'S':
-                    actionStai(game);
-                    break;
-                default:
-                    printf("Risposta errata: %c\n", answer);
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio != -1){
+            while(1){
+                // chiedere mossa al giocatore
+                printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
+                if(game->giocatori[giocatore].punteggio < 21){
+                    printf("Stai o Prendi carta (S/P): ");
+                    scanf("%c%c", &answer, &dummy);
+                    correctedAnswer = toupper(answer);
+
+                    // chiamata funziona relativa alla mossa
+                    switch(correctedAnswer){
+                        case 'P':
+                            actionPrendiCarta(mazzo, game, giocatore);
+                            break;
+                        case 'S':
+                            actionStai(game);
+                            break;
+                        default:
+                            printf("Mossa non disponibile: %c\n", answer);
+                    }
+                }
+                // sistema i punteggi dei giocatori
+                checkPoints(game);
+                // finché il punteggio non supera 21 continua a chiedere
+                if(game->giocatori[giocatore].punteggio == -2 || game->giocatori[giocatore].punteggio == 21) break;
             }
         }
     }
