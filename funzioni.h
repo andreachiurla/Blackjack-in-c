@@ -13,7 +13,6 @@ typedef struct {
     int punteggio;        // per ogni giocatore, il punteggio attuale
     int isAsso;          // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
     int manyPlayerCards; // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
-    bool areSameCards;   // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
 } Giocatore;
 
 typedef struct{

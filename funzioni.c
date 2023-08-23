@@ -312,9 +312,6 @@ int cardValueOf(char carta[2]){
  * 4. void
  */
 void updatePlayerPoints(Game *game, int cardValue, int player) {
-    // se il valore delle due carte è uguali, il giocatore potrà dividere
-    if(game->giocatori[player].punteggio == cardValue) game->giocatori[player].areSameCards = true;
-
     // aggiorno il punteggio attuale del giocatore
     if (game->giocatori[player].punteggio == 0) game->giocatori[player].punteggio = cardValue;
     else game->giocatori[player].punteggio += cardValue;
