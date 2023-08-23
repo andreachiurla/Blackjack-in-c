@@ -258,11 +258,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
             pescaCarta(mazzo, carta);
 //            game->nGiocatori = nGiocatoriRiserva;
             // stampo la carta uscita
-            if (giocatore != 0) {
-                printf("%s: ", game->giocatori[giocatore - 1].nome);
-            } else {
-                printf("Banco: ");
-            }
+            printf("%s: ", game->giocatori[giocatore].nome);
             printCard(carta);
             printf("\n");
             // la memorizzo nell'array
