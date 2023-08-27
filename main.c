@@ -34,11 +34,15 @@ int main() {
     // chiedo il numero e i nomi dei giocatori
     game.nGiocatori = askPlayersName(&game);
     setMoney(&game);
-    printPlayersName(&game);
+    //printPlayersName(&game);
 
     // ciclo essenziale del gioco, ogni iterazione è una manche
     while(playing){
+        printf("\n");
+
         askBets(&game);
+
+        printf("\n");
 
         distribuisciCarte(mazzoCarte, &game);
         printf("\n");
@@ -60,10 +64,17 @@ int main() {
 
         dealerPlays(mazzoCarte, &game);
 
+        printf("\n");
+
         giveRevenue(&game);
 
         printPoints(&game);
+
+        printf("\n");
+
         printMoney(&game);
+
+        printf("\n");
 
         playing = keepPlaying();
     }

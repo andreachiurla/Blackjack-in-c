@@ -40,14 +40,14 @@ int askPlayersName(Game * game){
         printf("Inserire il nome del giocatore: ");
         memset(game->giocatori[1].nome, 0, NOMEGIOCATOREMAXLEN);
         fgets(game->giocatori[1].nome, NOMEGIOCATOREMAXLEN, stdin);
-    }else if(nGiocatori > 1){
+    }else{
         // nel caso ci sia più di un giocatore entra nel ciclo che chiede il nome e controlla che non sia uguale a uno già inserito
         printf("\nInserire il nome di ciascun giocatore.\n");
         while(temp <= nGiocatori){
             printf("Giocatore %d: ", temp);
-            memset(game->giocatori[temp].nome, 0, NOMEGIOCATOREMAXLEN);
+            memset(game->giocatori[temp].nome, 0, NOMEGIOCATOREMAXLEN);     // imposta tutto a 0
             fgets(game->giocatori[temp].nome, NOMEGIOCATOREMAXLEN, stdin);
-            printf("Immesso: %s\n", game->giocatori[temp].nome);
+            // printf("Immesso: %s\n", game->giocatori[temp].nome);     // DEBUG
 
             // se è stato appena chiesto il nome al primo giocatore non vengono effettuati controlli
             if(temp == 1) {
@@ -262,9 +262,8 @@ void pescaCarta(FILE *mazzo, char carta[]){
  */
 void distribuisciCarte(FILE *mazzo, Game *game){
     char carta[3];  // stringa contenente i due caratteri che indicano la carta
-    int nGiocatoriRiserva = game->nGiocatori;
 
-    printf("Numero giocatori: %d\n", game->nGiocatori);
+    //printf("Numero giocatori: %d\n", game->nGiocatori);   // debug
 
     for(int giro = 1; giro <= 2; giro++) {
         for(int giocatore = 0; giocatore <= game->nGiocatori; giocatore++) {
@@ -273,13 +272,15 @@ void distribuisciCarte(FILE *mazzo, Game *game){
                 printf("Giocatore %s non gioca\n", game->giocatori[giocatore].nome);
                 continue;   // ignora tutte le righe successive e ricomincia il ciclo
             }
-            printf("Giocatore %d/%d giro %d\n", giocatore, game->nGiocatori, giro);
+            //printf("Giocatore %d/%d giro %d\n", giocatore, game->nGiocatori, giro);   // debug
+
             // pesco la carta e la memorizzo nella stringa "carta"
             pescaCarta(mazzo, carta);
 
             // stampo la carta uscita se non è la seconda carta del banco
             if(giro == 2 && giocatore == 0){
                 strcpy(game->dealerSecondCard, carta);
+                printf("*seconda carta del banco nascosta*\n");
             }else{
                 printf("%s: ", game->giocatori[giocatore].nome);
                 printCard(carta);
@@ -424,7 +425,8 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                     //scanf("%c%c", &answer, &dummy);
                     correctedAnswer = toupper(answer);
 
-                    printf("\nANSWER: %c\n", correctedAnswer);
+                    // printf("\nANSWER: %c\n", correctedAnswer);   // DEBUG
+
                     // chiamata funziona relativa alla mossa
                     switch(correctedAnswer){
                         case 'P':
@@ -450,8 +452,8 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
 
 /*
  * 1. checkPoints
- * 2. controlla tutti i punteggio dei nome a quelli che hanno sballato viene impostato il punteggio a -2 e il giocatore verrà riconosciuto come fuori dalla manche.
- * 3. riceve l'array con i punteggio e il numero dei nome
+ * 2. controlla tutti i punteggio dei giocatori e a quelli che hanno sballato viene impostato il punteggio a -2 e il giocatore verrà riconosciuto come fuori dalla manche.
+ * 3. riceve l'array con il punteggio e il numero dei giocatori
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPoints(Game *game){
@@ -494,10 +496,16 @@ void dealerPlays(FILE *mazzo, Game *game){
     printCard(game->dealerSecondCard);
     updatePlayerPoints(game, cardValueOf(game->dealerSecondCard), 0);
 
+    printf("\n");
+
     while(game->giocatori[0].punteggio < 17){
         pescaCarta(mazzo, carta);
+
+        printf("Il banco pesca: ");
         printCard(carta);
+
         updatePlayerPoints(game, cardValueOf(carta), 0);
+        printf("\n");
     }
 }
 
@@ -515,6 +523,8 @@ void giveRevenue(Game *game){
         }else if(game->giocatori[giocatore].punteggio > game->giocatori[0].punteggio){
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.0f;
         }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){
+            game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
+        }else if(game->giocatori[giocatore].punteggio != SBANCATO && game->giocatori[giocatore].punteggio == SBANCATO){
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
         }
     }
