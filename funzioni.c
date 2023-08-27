@@ -260,7 +260,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
 
             // stampo la carta uscita se non è la seconda carta del banco
             if(giro == 2 && giocatore == 0){
-                game->bancoSecondCardValue = cardValueOf(carta);
+                game->dealerSecondCardValue = cardValueOf(carta);
             }else{
                 printf("%s: ", game->giocatori[giocatore].nome);
                 printCard(carta);
