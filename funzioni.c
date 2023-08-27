@@ -40,8 +40,7 @@ int askPlayersName(Game * game){
         printf("Inserire il nome del giocatore: ");
         memset(game->giocatori[1].nome, 0, NOMEGIOCATOREMAXLEN);
         fgets(game->giocatori[1].nome, NOMEGIOCATOREMAXLEN, stdin);
-    }
-    else if(nGiocatori > 1){
+    }else if(nGiocatori > 1){
         // nel caso ci sia più di un giocatore entra nel ciclo che chiede il nome e controlla che non sia uguale a uno già inserito
         printf("\nInserire il nome di ciascun giocatore.\n");
         while(temp <= nGiocatori){
@@ -67,12 +66,20 @@ int askPlayersName(Game * game){
         }
     }
 
+    setMoney(game);
+
     // sostituisce il '\n' nelle stringhe con '\0'
     for (int i = 1; i <= nGiocatori; ++i) {
         game->giocatori[i].nome[strcspn(game->giocatori[i].nome, "\n")] = '\0';
     }
 
     return nGiocatori;
+}
+
+void setMoney(Game *game){
+    for (int giocatore = 1; giocatore < game->nGiocatori; ++giocatore) {
+        game->giocatori[giocatore].money = STARTINGMONEY;
+    }
 }
 
 void printPlayersName(Game *game) {
@@ -111,24 +118,28 @@ void askBets(Game *game){
     // cambia il procedimento in base al numero dei nome
     if(game->nGiocatori == 1){
         while(1){
-            printf("%s, fai la tua puntata: ", game->giocatori[0].nome);
-            scanf("%d", &game->giocatori[0].bet);
-            if (game->giocatori[0].bet < 0 || game->giocatori[0].bet > 5) {
+            printf("%s, fai la tua puntata: ", game->giocatori[1].nome);
+            scanf("%d", &game->giocatori[1].bet);
+            if (game->giocatori[1].bet < 0 || game->giocatori[1].bet > 5){
                 printf("Inserisci un valore compreso tra 1 e 5.\n");
+            }else if(game->giocatori[1].money < game->giocatori[1].bet){
+                printf("Non hai abbastanza soldi, hai solo %.1f", game->giocatori[1].money);
             }else{
                 break;
             }
         }
     }else{
         printf("Fate la vostra puntata.\n");
-        for(int i = 1; i <= game->nGiocatori;){
-            printf("%s: ", game->giocatori[i].nome);
-            scanf("%d", &game->giocatori[i].bet);
+        for(int giocatore = 1; giocatore <= game->nGiocatori;){
+            printf("%s: ", game->giocatori[giocatore].nome);
+            scanf("%d", &game->giocatori[giocatore].bet);
 
-            if(game->giocatori[i].bet < 0 || game->giocatori[i].bet > 5){
+            if(game->giocatori[giocatore].bet < 0 || game->giocatori[giocatore].bet > 5){
                 printf("Inserisci un valore compreso tra 1 e 5.\n");
+            }else if(game->giocatori[giocatore].money < game->giocatori[giocatore].bet) {
+                printf("%s non hai abbastanza soldi, hai solo %.1f", game->giocatori[giocatore].nome, game->giocatori[giocatore].money);
             }else{
-                ++i;
+                ++giocatore;
             }
         }
     }

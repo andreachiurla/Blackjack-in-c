@@ -12,7 +12,7 @@ int main() {
 
 /*
     int nGiocatori;                         // numero di partecipanti
-    int money[NGIOCATORIMAX] = {MONEY, MONEY, MONEY, MONEY, MONEY, MONEY};      // quanti soldi ha ogni singolo giocatore
+    int money[NGIOCATORIMAX] = {STARTINGMONEY, STARTINGMONEY, STARTINGMONEY, STARTINGMONEY, STARTINGMONEY, STARTINGMONEY};      // quanti soldi ha ogni singolo giocatore
     int bet[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // puntate del turno attuale
     int areSameCards[NGIOCATORIMAX] = {0, 0, 0, 0, 0, 0};       // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
     int manyPlayerCards[NGIOCATORIMAX] = {2, 2, 2, 2, 2, 2};

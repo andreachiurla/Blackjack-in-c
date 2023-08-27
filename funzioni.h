@@ -4,12 +4,12 @@
 
 #define NOMEGIOCATOREMAXLEN 20
 #define NGIOCATORIMAX 6
-#define MONEY 30
+#define STARTINGMONEY 30
 
 // definizione strutture
 typedef struct {
     char nome[NOMEGIOCATOREMAXLEN];
-    int money;           // quanti soldi ha ogni singolo giocatore
+    float money;           // quanti soldi ha ogni singolo giocatore
     int bet;            // per ogni giocatore, le puntate del turno attuale
     int punteggio;        // per ogni giocatore, il punteggio attuale
     int isAsso;          // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
@@ -41,3 +41,5 @@ int askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void dealerBlackjackAtFirstManche(Game *game);
 void dealerPlays(FILE *mazzo, Game *game);
+void setMoney(Game *game);
+void giveRevenue(Game *game);
