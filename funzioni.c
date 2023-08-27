@@ -248,6 +248,7 @@ void pescaCarta(FILE *mazzo, char carta[]){
 void distribuisciCarte(FILE *mazzo, Game *game){
     char carta[3];  // stringa contenente i due caratteri che indicano la carta
     int nGiocatoriRiserva = game->nGiocatori;
+    int bancoSecondCardValue = -1;
 
     printf("Numero giocatori: %d\n", game->nGiocatori);
 
@@ -256,14 +257,18 @@ void distribuisciCarte(FILE *mazzo, Game *game){
             printf("Giocatore %d/%d giro %d\n", giocatore, game->nGiocatori, giro);
             // pesco la carta e la memorizzo nella stringa "carta"
             pescaCarta(mazzo, carta);
-//            game->nGiocatori = nGiocatoriRiserva;
-            // stampo la carta uscita
-            printf("%s: ", game->giocatori[giocatore].nome);
-            printCard(carta);
-            printf("\n");
-            // la memorizzo nell'array
-            updatePlayerPoints(game, cardValueOf(carta), giocatore);
-            if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;         //  NON VAAAAAA
+
+            // stampo la carta uscita se non è la seconda carta del banco
+            if(giro == 2 && giocatore == 0){
+                game->bancoSecondCardValue = cardValueOf(carta);
+            }else{
+                printf("%s: ", game->giocatori[giocatore].nome);
+                printCard(carta);
+                printf("\n");
+                // la memorizzo nell'array
+                updatePlayerPoints(game, cardValueOf(carta), giocatore);
+                if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;         //  NON VAAAAAA
+            }
 
             sleep(1);   // per non far estrarre le stesse carte
 

@@ -19,6 +19,7 @@ typedef struct {
 typedef struct{
     int nGiocatori;
     Giocatore giocatori[NGIOCATORIMAX];
+    int bancoSecondCardValue;
 }Game;
 
 // definizione funzioni
