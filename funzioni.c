@@ -390,7 +390,8 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
 
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio != -1){
-            while(1){
+            game->giocatori[giocatore].done = false;
+            while(game->giocatori[giocatore].done){
                 // chiedere mossa al giocatore
                 printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
                 if(game->giocatori[giocatore].punteggio < 21){
@@ -406,7 +407,7 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                             actionPrendiCarta(mazzo, game, giocatore);
                             break;
                         case 'S':
-                            actionStai(game);
+                            game->giocatori[giocatore].done = true;
                             break;
                         default:
                             printf("Mossa non disponibile: %c\n", answer);
@@ -415,7 +416,9 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                 // sistema i punteggi dei giocatori
                 checkPoints(game);
                 // finché il punteggio non supera 21 continua a chiedere
-                if(game->giocatori[giocatore].punteggio == -2 || game->giocatori[giocatore].punteggio == 21) break;
+                if(game->giocatori[giocatore].punteggio == -2 || game->giocatori[giocatore].punteggio == 21){
+                    game->giocatori[giocatore].done = true;
+                }
             }
         }
     }
@@ -433,14 +436,6 @@ int checkPoints(Game *game){
         if(game->giocatori[i].punteggio > 21) game->giocatori[i].punteggio = -2;
     }
     return 0;
-}
-
-/*
- *
- */
-void actionStai(Game *game){
-    printf("TO-DO implement actionStai\n");
-    // updatePlayerPoints(game, cardValueOf(carta), );
 }
 
 /*

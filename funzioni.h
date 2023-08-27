@@ -14,6 +14,7 @@ typedef struct {
     int punteggio;        // per ogni giocatore, il punteggio attuale
     int isAsso;          // se tra le carte del giocatore c'è un asso, per mostrare i due punteggio possibili
     int manyPlayerCards; // per ogni giocatore, se c'è 0 ha due carte diverse, se c'è 1 due uguali
+    bool done;          // serve per determinare se il giocatore non vuole più chiedere carte per la manche
 } Giocatore;
 
 typedef struct{
@@ -38,6 +39,5 @@ void printCard(char carta[2]);
 int cardValueOf(char carta[2]);
 int askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
-void actionStai(Game *game);
 void dealerBlackjackAtFirstManche(Game *game);
 void dealerPlays(FILE *mazzo, Game *game);
