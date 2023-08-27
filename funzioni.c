@@ -340,14 +340,14 @@ void checkBlackjackAtFirstManche(Game *game){
 
     // gestire puntate se il banco ha fatto blackjack
     if(game->giocatori[0].punteggio == -1){
-        bancoBlackjackAtFirstManche(game);
+        dealerBlackjackAtFirstManche(game);
     }
 }
 
 /*
  *
  */
-void bancoBlackjackAtFirstManche(Game *game){
+void dealerBlackjackAtFirstManche(Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio == -1){
             printf("%s hai pareggiato.\n", game->giocatori[giocatore].nome);
@@ -468,6 +468,6 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 /*
  *
  */
-void bancoPlays(Game *game){
+void dealerPlays(Game *game){
 
 }

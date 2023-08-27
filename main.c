@@ -38,7 +38,6 @@ int main() {
         return 1;
     }
 
-
     strcpy(game.giocatori[0].nome, "Banco");
     game.giocatori[0].manyPlayerCards = 2;
 
@@ -68,7 +67,7 @@ int main() {
         printPoints(&game);
         printf("\n");
 
-        bancoPlays(&game);
+        dealerPlays(&game);
 
         playing = keepPlaying();
     }

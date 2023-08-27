@@ -39,5 +39,5 @@ int cardValueOf(char carta[2]);
 int askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void actionStai(Game *game);
-void bancoBlackjackAtFirstManche(Game *game);
-void bancoPlays(Game *game);
+void dealerBlackjackAtFirstManche(Game *game);
+void dealerPlays(Game *game);
