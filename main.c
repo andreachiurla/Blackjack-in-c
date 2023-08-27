@@ -69,6 +69,11 @@ int main() {
 
         dealerPlays(mazzoCarte, &game);
 
+        giveRevenue(&game);
+
+        printPoints(&game);
+        printMoney(&game);
+
         playing = keepPlaying();
     }
 

@@ -60,7 +60,6 @@ int askPlayersName(Game * game){
                         break;
                     }
                 }
-
                 temp++;
             }
         }
@@ -77,7 +76,7 @@ int askPlayersName(Game * game){
 }
 
 void setMoney(Game *game){
-    for (int giocatore = 1; giocatore < game->nGiocatori; ++giocatore) {
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         game->giocatori[giocatore].money = STARTINGMONEY;
     }
 }
@@ -115,31 +114,38 @@ bool keepPlaying(){
  * 4. void
  */
 void askBets(Game *game){
-    // cambia il procedimento in base al numero dei nome
+    // cambia il procedimento in base al numero dei giocatori
     if(game->nGiocatori == 1){
         while(1){
-            printf("%s, fai la tua puntata: ", game->giocatori[1].nome);
-            scanf("%d", &game->giocatori[1].bet);
-            if (game->giocatori[1].bet < 0 || game->giocatori[1].bet > 5){
-                printf("Inserisci un valore compreso tra 1 e 5.\n");
-            }else if(game->giocatori[1].money < game->giocatori[1].bet){
-                printf("Non hai abbastanza soldi, hai solo %.1f", game->giocatori[1].money);
-            }else{
-                break;
+            if(game->giocatori[1].money > 0){
+                printf("%s, fai la tua puntata: ", game->giocatori[1].nome);
+                scanf("%d", &game->giocatori[1].bet);
+                if (game->giocatori[1].bet < 0 || game->giocatori[1].bet > 5) {
+                    printf("Inserisci un valore compreso tra 1 e 5.\n");
+                }else if (game->giocatori[1].money < game->giocatori[1].bet) {
+                    printf("Non hai abbastanza soldi, hai solo %.1f", game->giocatori[1].money);
+                }else {
+                    game->giocatori[1].money -= (float) game->giocatori[1].bet;
+                    break;
+                }
             }
         }
     }else{
         printf("Fate la vostra puntata.\n");
         for(int giocatore = 1; giocatore <= game->nGiocatori;){
-            printf("%s: ", game->giocatori[giocatore].nome);
-            scanf("%d", &game->giocatori[giocatore].bet);
+            if(game->giocatori[giocatore].money > 0) {  // chiede bet solo se gli rimangono dei soldi
+                printf("%s: ", game->giocatori[giocatore].nome);
+                scanf("%d", &game->giocatori[giocatore].bet);
 
-            if(game->giocatori[giocatore].bet < 0 || game->giocatori[giocatore].bet > 5){
-                printf("Inserisci un valore compreso tra 1 e 5.\n");
-            }else if(game->giocatori[giocatore].money < game->giocatori[giocatore].bet) {
-                printf("%s non hai abbastanza soldi, hai solo %.1f", game->giocatori[giocatore].nome, game->giocatori[giocatore].money);
-            }else{
-                ++giocatore;
+                if (game->giocatori[giocatore].bet < 0 || game->giocatori[giocatore].bet > 5) {
+                    printf("Inserisci un valore compreso tra 1 e 5.\n");
+                } else if (game->giocatori[giocatore].money < game->giocatori[giocatore].bet) {
+                    printf("%s non hai abbastanza soldi, hai solo %.1f", game->giocatori[giocatore].nome,
+                           game->giocatori[giocatore].money);
+                } else {
+                    game->giocatori[giocatore].money -= (float) game->giocatori[giocatore].bet;
+                    ++giocatore;
+                }
             }
         }
     }
@@ -293,7 +299,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
  * 3. riceve i due caratteri della carta (valore e seme)
  * 4. void
  */
-void printCard(char carta[2]){
+void printCard(char carta[3]){
     // stampa valore
     if(carta[0] == 'D') printf("10 di ");
     else printf("%c di ", carta[0]);
@@ -402,7 +408,7 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio != -1){
             game->giocatori[giocatore].done = false;
-            while(game->giocatori[giocatore].done){
+            while( ! game->giocatori[giocatore].done){
                 // chiedere mossa al giocatore
                 printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
                 if(game->giocatori[giocatore].punteggio < 21){
@@ -484,5 +490,31 @@ void dealerPlays(FILE *mazzo, Game *game){
     while(game->giocatori[0].punteggio < 17){
         pescaCarta(mazzo, carta);
         printCard(carta);
+        updatePlayerPoints(game, cardValueOf(carta), 0);
+    }
+}
+
+void giveRevenue(Game *game){
+    for (int giocatore = 1; giocatore < game->nGiocatori; ++giocatore) {
+        if( game->giocatori[giocatore].bet == 0){
+            continue;   // ignora tutte le righe successive e ricomincia il ciclo
+        }
+        if(game->giocatori[giocatore].punteggio == BLACKJACK){
+            if(game->giocatori[0].punteggio == BLACKJACK){
+                game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
+            }else{
+                game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.5f;
+            }
+        }else if(game->giocatori[giocatore].punteggio > game->giocatori[0].punteggio){
+            game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.0f;
+        }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){
+            game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
+        }
+    }
+}
+
+void printMoney(Game *game){
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        printf("%s hai %.1f soldi\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].money);
     }
 }
