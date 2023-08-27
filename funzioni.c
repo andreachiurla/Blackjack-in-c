@@ -405,9 +405,7 @@ void printPoints(Game *game){
  *
  */
 int askAndExecuteAction(FILE *mazzo, Game *game){
-    char dummy;
     char answer;
-    char correctedAnswer;
 
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if( game->giocatori[giocatore].bet == 0){
@@ -416,19 +414,19 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
         }
         if(game->giocatori[giocatore].punteggio != -1){
             game->giocatori[giocatore].done = false;
-            while( ! game->giocatori[giocatore].done){
+            // finché non sbanca o decide di non chiedere più carta continua a chiedere
+            while(!game->giocatori[giocatore].done){
                 // chiedere mossa al giocatore
                 printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
                 if(game->giocatori[giocatore].punteggio < 21){
                     printf("Stai o Prendi carta (S/P): ");
                     scanf(" %c", &answer);
-                    //scanf("%c%c", &answer, &dummy);
-                    correctedAnswer = toupper(answer);
+                    answer = toupper(answer);
 
                     // printf("\nANSWER: %c\n", correctedAnswer);   // DEBUG
 
                     // chiamata funziona relativa alla mossa
-                    switch(correctedAnswer){
+                    switch(answer){
                         case 'P':
                             actionPrendiCarta(mazzo, game, giocatore);
                             break;
@@ -442,7 +440,7 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                 // sistema i punteggi dei giocatori
                 checkPoints(game);
                 // finché il punteggio non supera 21 continua a chiedere
-                if(game->giocatori[giocatore].punteggio == -2 || game->giocatori[giocatore].punteggio == 21){
+                if(game->giocatori[giocatore].punteggio == SBANCATO || game->giocatori[giocatore].punteggio == BLACKJACK){
                     game->giocatori[giocatore].done = true;
                 }
             }
@@ -457,9 +455,9 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPoints(Game *game){
-    if(game->giocatori[0].punteggio > 21) return 1;
-    for (int i = 1; i <= game->nGiocatori; ++i) {
-        if(game->giocatori[i].punteggio > 21) game->giocatori[i].punteggio = -2;
+    if(game->giocatori[0].punteggio > BLACKJACK) return 1;
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio > BLACKJACK) game->giocatori[giocatore].punteggio = SBANCATO;
     }
     return 0;
 }
