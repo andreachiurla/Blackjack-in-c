@@ -19,7 +19,7 @@ typedef struct {
 typedef struct{
     int nGiocatori;
     Giocatore giocatori[NGIOCATORIMAX];
-    int dealerSecondCardValue;
+    char dealerSecondCard[3];
 }Game;
 
 // definizione funzioni
@@ -40,4 +40,4 @@ int askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void actionStai(Game *game);
 void dealerBlackjackAtFirstManche(Game *game);
-void dealerPlays(Game *game);
+void dealerPlays(FILE *mazzo, Game *game);

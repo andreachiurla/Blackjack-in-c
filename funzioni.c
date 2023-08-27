@@ -248,7 +248,6 @@ void pescaCarta(FILE *mazzo, char carta[]){
 void distribuisciCarte(FILE *mazzo, Game *game){
     char carta[3];  // stringa contenente i due caratteri che indicano la carta
     int nGiocatoriRiserva = game->nGiocatori;
-    int bancoSecondCardValue = -1;
 
     printf("Numero giocatori: %d\n", game->nGiocatori);
 
@@ -260,7 +259,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
 
             // stampo la carta uscita se non è la seconda carta del banco
             if(giro == 2 && giocatore == 0){
-                game->dealerSecondCardValue = cardValueOf(carta);
+                strcpy(game->dealerSecondCard, carta);
             }else{
                 printf("%s: ", game->giocatori[giocatore].nome);
                 printCard(carta);
@@ -396,9 +395,11 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                 printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
                 if(game->giocatori[giocatore].punteggio < 21){
                     printf("Stai o Prendi carta (S/P): ");
-                    scanf("%c%c", &answer, &dummy);
+                    scanf(" %c", &answer);
+                    //scanf("%c%c", &answer, &dummy);
                     correctedAnswer = toupper(answer);
 
+                    printf("\nANSWER: %c\n", correctedAnswer);
                     // chiamata funziona relativa alla mossa
                     switch(correctedAnswer){
                         case 'P':
@@ -468,6 +469,14 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 /*
  *
  */
-void dealerPlays(Game *game){
+void dealerPlays(FILE *mazzo, Game *game){
+    char carta[3];
 
+    printCard(game->dealerSecondCard);
+    updatePlayerPoints(game, cardValueOf(game->dealerSecondCard), 0);
+
+    while(game->giocatori[0].punteggio < 17){
+        pescaCarta(mazzo, carta);
+        printCard(carta);
+    }
 }

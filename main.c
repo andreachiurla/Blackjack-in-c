@@ -67,7 +67,7 @@ int main() {
         printPoints(&game);
         printf("\n");
 
-        dealerPlays(&game);
+        dealerPlays(mazzoCarte, &game);
 
         playing = keepPlaying();
     }
