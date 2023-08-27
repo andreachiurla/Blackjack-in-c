@@ -65,8 +65,6 @@ int askPlayersName(Game * game){
         }
     }
 
-    setMoney(game);
-
     // sostituisce il '\n' nelle stringhe con '\0'
     for (int i = 1; i <= nGiocatori; ++i) {
         game->giocatori[i].nome[strcspn(game->giocatori[i].nome, "\n")] = '\0';
@@ -270,6 +268,11 @@ void distribuisciCarte(FILE *mazzo, Game *game){
 
     for(int giro = 1; giro <= 2; giro++) {
         for(int giocatore = 0; giocatore <= game->nGiocatori; giocatore++) {
+            // se il giocatore non ha puntato non viene considerato
+            if(giocatore > 0 && game->giocatori[giocatore].bet == 0){
+                printf("Giocatore %s non gioca\n", game->giocatori[giocatore].nome);
+                continue;   // ignora tutte le righe successive e ricomincia il ciclo
+            }
             printf("Giocatore %d/%d giro %d\n", giocatore, game->nGiocatori, giro);
             // pesco la carta e la memorizzo nella stringa "carta"
             pescaCarta(mazzo, carta);
@@ -406,6 +409,10 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
     char correctedAnswer;
 
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        if( game->giocatori[giocatore].bet == 0){
+            printf("%s non gioca\n", game->giocatori[giocatore].nome);
+            continue;   // ignora tutte le righe successive e ricomincia il ciclo
+        }
         if(game->giocatori[giocatore].punteggio != -1){
             game->giocatori[giocatore].done = false;
             while( ! game->giocatori[giocatore].done){

@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
+// DA FARE: resettare il file del mazzo quando tutte le carte sono state pescate
 
 int main() {
     printf("Blackjack by Chiurla Andrea\n\n");
@@ -43,6 +45,7 @@ int main() {
 
     // chiedo il numero e i nomi dei giocatori
     game.nGiocatori = askPlayersName(&game);
+    setMoney(&game);
     printPlayersName(&game);
 
     // ciclo essenziale del gioco, ogni iterazione è una manche
