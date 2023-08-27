@@ -455,7 +455,9 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPoints(Game *game){
-    if(game->giocatori[0].punteggio > BLACKJACK) return 1;
+    if(game->giocatori[0].punteggio > BLACKJACK) return 1;  // se il banco ha sbancato restituisce 1
+
+    // controlla il punteggio di tutti i giocatori e sistema il valore (-2 se ha sbancato, -1 se ha fatto blackjack)
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio > BLACKJACK) game->giocatori[giocatore].punteggio = SBANCATO;
     }
