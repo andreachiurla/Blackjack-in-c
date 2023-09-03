@@ -346,7 +346,7 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
 
 /*
  * 1. checkBlackjackAtFirstManche
- * 2. controlla tutti i nome e vede se hanno fatto blackjack, controllando se ha due carte e il suo punteggio equivale a 21
+ * 2. controlla tutti i giocatori e vede se hanno fatto blackjack, controllando se ha due carte e il suo punteggio equivale a 21
  * 3. riceve l'array che indica quante carte hanno i nome, l'array con i punteggio e quanti nome ci sono
  * 4. void
  */
@@ -414,7 +414,7 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
         }
         if(game->giocatori[giocatore].punteggio != -1){
             game->giocatori[giocatore].done = false;
-            // finché non sbanca o decide di non chiedere più carta continua a chiedere
+            // finché non sballa o decide di non chiedere più carta continua a chiedere
             while(!game->giocatori[giocatore].done){
                 // chiedere mossa al giocatore
                 printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
@@ -440,7 +440,7 @@ int askAndExecuteAction(FILE *mazzo, Game *game){
                 // sistema i punteggi dei giocatori
                 checkPoints(game);
                 // finché il punteggio non supera 21 continua a chiedere
-                if(game->giocatori[giocatore].punteggio == SBANCATO || game->giocatori[giocatore].punteggio == BLACKJACK){
+                if(game->giocatori[giocatore].punteggio == SBALLATO || game->giocatori[giocatore].punteggio == BLACKJACK || game->giocatori[giocatore].punteggio == 21 || game->giocatori[giocatore].punteggio > 21){
                     game->giocatori[giocatore].done = true;
                 }
             }
