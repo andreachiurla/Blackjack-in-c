@@ -404,7 +404,7 @@ void printPoints(Game *game){
 /*
  *
  */
-int askAndExecuteAction(FILE *mazzo, Game *game){
+void askAndExecuteAction(FILE *mazzo, Game *game){
     char answer;
 
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
