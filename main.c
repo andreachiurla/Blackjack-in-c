@@ -14,7 +14,7 @@ int main() {
     FILE *mazzoCarte;                       // puntatore al file in cui vengono memorizzate le carte uscite.
     bool playing = true;                    // valore booleano usato per determinare se il gioco continua o no
 
-    // formatto il file del mazzo
+    // formatto il file del mazzo aprendolo in scrittura così sovrascrivo
     if((mazzoCarte = fopen("mazzo.txt","w")) == NULL) {
         printf("Errore nell'apertura del file");
         return 1;
@@ -22,12 +22,13 @@ int main() {
     riempiFileMazzo(mazzoCarte);
     fclose(mazzoCarte);
 
-    // apertura del file con controllo
+    // apertura del file in modifica con controllo
     if((mazzoCarte = fopen("mazzo.txt","r+")) == NULL) {
         printf("Errore nell'apertura del file");
         return 1;
     }
 
+    // assegno alla posizione 0 dell'array dei nomi la stringa "Banco"
     strcpy(game.giocatori[0].nome, "Banco");
     game.giocatori[0].manyPlayerCards = 2;
 
@@ -55,7 +56,7 @@ int main() {
         askAndExecuteAction(mazzoCarte, &game);
 
         if(checkPoints(&game) == 1) {
-            printf("Banco ha sbancato");
+            printf("Il banco ha sballato");
         }
 
         printf("\n");

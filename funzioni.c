@@ -442,9 +442,12 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
                 // finché il punteggio non supera 21 continua a chiedere
                 if(game->giocatori[giocatore].punteggio == SBALLATO || game->giocatori[giocatore].punteggio == BLACKJACK || game->giocatori[giocatore].punteggio == 21 || game->giocatori[giocatore].punteggio > 21){
                     game->giocatori[giocatore].done = true;
+                    if(game->giocatori[giocatore].punteggio == 21) printf("Ottimo!");
+                    printf("\n\n");
                 }
             }
         }
+        sleep(1);
     }
 }
 
@@ -455,11 +458,14 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPoints(Game *game){
-    if(game->giocatori[0].punteggio > BLACKJACK) return 1;  // se il banco ha sbancato restituisce 1
+    if(game->giocatori[0].punteggio > 21) return 1;  // se il banco ha sballato restituisce 1
 
-    // controlla il punteggio di tutti i giocatori e sistema il valore (-2 se ha sbancato, -1 se ha fatto blackjack)
+    // controlla il punteggio di tutti i giocatori e imposta -2 se ha sballato
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
-        if(game->giocatori[giocatore].punteggio > BLACKJACK) game->giocatori[giocatore].punteggio = SBANCATO;
+        if(game->giocatori[giocatore].punteggio > 21){
+            printf("%s hai %d punti e hai sballato.", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
+            game->giocatori[giocatore].punteggio = SBALLATO;
+        }
     }
     return 0;
 }
@@ -499,9 +505,9 @@ void dealerPlays(FILE *mazzo, Game *game){
     printf("\n");
 
     while(game->giocatori[0].punteggio < 17){
-        pescaCarta(mazzo, carta);
-
         printf("Il banco pesca: ");
+        sleep(1);   // suspense
+        pescaCarta(mazzo, carta);
         printCard(carta);
 
         updatePlayerPoints(game, cardValueOf(carta), 0);
@@ -524,7 +530,7 @@ void giveRevenue(Game *game){
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.0f;
         }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
-        }else if(game->giocatori[giocatore].punteggio != SBANCATO && game->giocatori[giocatore].punteggio == SBANCATO){
+        }else if(game->giocatori[giocatore].punteggio != SBALLATO && game->giocatori[giocatore].punteggio == SBALLATO){
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
         }
     }

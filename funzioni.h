@@ -5,7 +5,7 @@
 #define NOMEGIOCATOREMAXLEN 20
 #define NGIOCATORIMAX 6
 #define STARTINGMONEY 30.0f
-#define SBANCATO -2
+#define SBALLATO -2
 #define BLACKJACK -1
 
 // definizione strutture
@@ -39,7 +39,7 @@ void riempiFileMazzo(FILE *mazzoCarte);
 void pescaCarta(FILE *mazzo, char carta[]);
 void printCard(char carta[3]);
 int cardValueOf(char carta[3]);
-int askAndExecuteAction(FILE *mazzo, Game *game);
+void askAndExecuteAction(FILE *mazzo, Game *game);
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore);
 void dealerBlackjackAtFirstManche(Game *game);
 void dealerPlays(FILE *mazzo, Game *game);
