@@ -385,7 +385,7 @@ void printPoints(Game *game){
         if(game->giocatori[giocatore].punteggio == -1){
             printf("BLACKJACK!");
         }else if(game->giocatori[giocatore].punteggio == -2){
-            printf("Sbancato");
+            printf("sballato");
         }else if(game->giocatori[giocatore].isAsso == 0 || game->giocatori[giocatore].punteggio + 10 > 21){
             printf("%d", game->giocatori[giocatore].punteggio);
         }else if(giocatore == 0 && game->giocatori[giocatore].isAsso == 0){
