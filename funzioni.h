@@ -30,7 +30,7 @@ void checkBlackjackAtFirstManche(Game *game);
 void distribuisciCarte(FILE *mazzo, Game *game);
 void askBets(Game *game);
 int checkPoints(Game *game);
-void printPoints(Game *game);
+void printMorePlayersPoints(Game *game);
 void updatePlayerPoints(Game *game, int cardValue, int player);
 int askPlayersName(Game * game);
 void printPlayersName(Game *game);

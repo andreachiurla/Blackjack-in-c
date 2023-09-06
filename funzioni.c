@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <time.h>   // utilizzo di rand() e srand()
 
+void printPlayerPoints(const Game *game, int giocatore);
+
 /*
  * 1. askPlayersName
  * 2. richiede quanti nome saranno presenti nella partita e poi i rispettivi nomi, controllando che non ne vengano inseriti di uguali
@@ -324,7 +326,7 @@ void printCard(char carta[3]){
  */
 int cardValueOf(char carta[2]){
     if(carta[0] == 'J' || carta[0] == 'Q' || carta[0] == 'K' || carta[0] == 'D') return 10;
-    else if(carta[0] == 'A') return 11;
+    else if(carta[0] == 'A') return 1;
     else return atoi(&carta[0]);
 }
 
@@ -365,7 +367,10 @@ void checkBlackjackAtFirstManche(Game *game){
 }
 
 /*
- *
+ * 1.
+ * 2.
+ * 3.
+ * 4.
  */
 void dealerBlackjackAtFirstManche(Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
@@ -377,27 +382,40 @@ void dealerBlackjackAtFirstManche(Game *game){
 }
 
 /*
- *
+ * 1.
+ * 2.
+ * 3.
+ * 4.
  */
-void printPoints(Game *game){
+void printMorePlayersPoints(Game *game){
     for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
         printf("%s: ", game->giocatori[giocatore].nome);
-        if(game->giocatori[giocatore].punteggio == -1){
-            printf("BLACKJACK!");
-        }else if(game->giocatori[giocatore].punteggio == -2){
-            printf("sballato");
-        }else if(game->giocatori[giocatore].isAsso == 0 || game->giocatori[giocatore].punteggio + 10 > 21){
-            printf("%d", game->giocatori[giocatore].punteggio);
-        }else if(giocatore == 0 && game->giocatori[giocatore].isAsso == 0){
-            if(game->giocatori[giocatore].punteggio + 10 >= 17){
-                printf("%d", game->giocatori[giocatore].punteggio + 10);
-            }else{
-                printf("%d", game->giocatori[giocatore].punteggio + 10);
-            }
-        }else{
-            printf("%d / %d", game->giocatori[giocatore].punteggio, game->giocatori[giocatore].punteggio + 10);
-        }
+        printPlayerPoints(game, giocatore);
         printf("\n");
+    }
+}
+
+/*
+ * 1.
+ * 2.
+ * 3.
+ * 4.
+ */
+void printPlayerPoints(const Game *game, int giocatore) {
+    if(game->giocatori[giocatore].punteggio == -1){
+        printf("BLACKJACK!");
+    }else if(game->giocatori[giocatore].punteggio == -2){
+        printf("sballato");
+    }else if(game->giocatori[giocatore].isAsso == 0 || game->giocatori[giocatore].punteggio + 10 > 21){
+        printf("%d", game->giocatori[giocatore].punteggio);
+    }else if(giocatore == 0 && game->giocatori[giocatore].isAsso == 0){
+        if(game->giocatori[giocatore].punteggio + 10 >= 17){
+            printf("%d", game->giocatori[giocatore].punteggio + 10);
+        }else{
+            printf("%d", game->giocatori[giocatore].punteggio + 10);
+        }
+    }else{
+        printf("%d / %d", game->giocatori[giocatore].punteggio, game->giocatori[giocatore].punteggio + 10);
     }
 }
 
@@ -416,8 +434,12 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
             game->giocatori[giocatore].done = false;
             // finché non sballa o decide di non chiedere più carta continua a chiedere
             while(!game->giocatori[giocatore].done){
+                // stampa punti
+                printf("%s hai ", game->giocatori[giocatore].nome);
+                printPlayerPoints(game, giocatore);
+                printf(" punti\n");
+
                 // chiedere mossa al giocatore
-                printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
                 if(game->giocatori[giocatore].punteggio < 21){
                     printf("Stai o Prendi carta (S/P): ");
                     scanf(" %c", &answer);
@@ -432,6 +454,7 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
                             break;
                         case 'S':
                             game->giocatori[giocatore].done = true;
+                            printf("\n");
                             break;
                         default:
                             printf("Mossa non disponibile: %c\n", answer);
@@ -442,7 +465,7 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
                 // finché il punteggio non supera 21 continua a chiedere
                 if(game->giocatori[giocatore].punteggio == SBALLATO || game->giocatori[giocatore].punteggio == BLACKJACK || game->giocatori[giocatore].punteggio == 21 || game->giocatori[giocatore].punteggio > 21){
                     game->giocatori[giocatore].done = true;
-                    if(game->giocatori[giocatore].punteggio == 21) printf("Ottimo!");
+                    if(game->giocatori[giocatore].punteggio == 21) printf("%s: 21, ottimo!", game->giocatori[giocatore].nome);
                     printf("\n\n");
                 }
             }
@@ -479,6 +502,7 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 
     pescaCarta(mazzo, carta);
 
+    printf("Carta pescata: ");
     printCard(carta);
 
     printf("\n");
@@ -491,6 +515,23 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     updatePlayerPoints(game, cardValue, giocatore);
 
     //printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
+}
+
+/*
+ * 1.
+ * 2.
+ * 3.
+ * 4.
+ */
+bool hasDealerToPlay(Game *game) {
+    int manySballato = 0;
+
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio == SBALLATO) manySballato++;
+    }
+
+    if(manySballato == game->nGiocatori) return false;
+    else return true;
 }
 
 /*

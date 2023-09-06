@@ -6,6 +6,8 @@
 
 // DA FARE: resettare il file del mazzo quando tutte le carte sono state pescate
 
+bool hasDealerToPlay(Game *game);
+
 int main() {
     printf("Blackjack by Chiurla Andrea\n\n");
 
@@ -49,7 +51,7 @@ int main() {
         printf("\n");
 
         checkBlackjackAtFirstManche(&game);
-        printPoints(&game);
+        printMorePlayersPoints(&game);
 
         printf("\n");
 
@@ -58,20 +60,20 @@ int main() {
         if(checkPoints(&game) == 1) {
             printf("Il banco ha sballato");
         }
-
-        printf("\n");
-        printPoints(&game);
         printf("\n");
 
-        dealerPlays(mazzoCarte, &game);
+        printMorePlayersPoints(&game);
+        printf("\n");
 
+        if(hasDealerToPlay(&game)){
+            dealerPlays(mazzoCarte, &game);
+        }
+        printf("\n");
+
+        printMorePlayersPoints(&game);
         printf("\n");
 
         giveRevenue(&game);
-
-        printPoints(&game);
-
-        printf("\n");
 
         printMoney(&game);
 
@@ -84,4 +86,3 @@ int main() {
 
     return 0;
 }
-
