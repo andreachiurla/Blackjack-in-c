@@ -15,7 +15,6 @@ void printPlayerPoints(const Game *game, int giocatore);
 int askPlayersName(Game * game){
     int nGiocatori;
     int temp = 1;
-    char trash;
     char strIn[30];
 
     // chiede il numero di nome
@@ -75,17 +74,42 @@ int askPlayersName(Game * game){
     return nGiocatori;
 }
 
+/*
+ * 1. setMoney
+ * 2. imposta tutte le variabili dei soldi posseduti da ogni giocatore alla costante STARTINGMONEY
+ * 3. riceve la struttura principale del gioco
+ * 4. void
+ */
 void setMoney(Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         game->giocatori[giocatore].money = STARTINGMONEY;
     }
 }
 
+/*
+ * 1. resetPlayerPoints
+ * 2. azzera tutti i valori necessari per effettuare un'altra manche
+ * 3. riceve la struttura principale del gioco
+ * 4. void
+ */
+void resetPlayersPoints(Game *game) {
+    for (int giocatore = 0; giocatore < game->nGiocatori; ++giocatore) {
+        game->giocatori[giocatore].punteggio = 0;
+        game->giocatori[giocatore].bet = 0;
+        game->giocatori[giocatore].done = false;
+        game->giocatori[giocatore].manyPlayerCards = 0;
+        game->giocatori[giocatore].isAsso = false;
+    }
+}
+
+/*
+ * FUNZIONE NON UTILIZZATA
 void printPlayersName(Game *game) {
     for(int giocatore = 1; giocatore <= game->nGiocatori; giocatore++) {
         printf("Giocatore n. %d: %s\n", giocatore, game->giocatori[giocatore].nome);
     }
 }
+*/
 
 /*
  * 1. keepPlaying
@@ -118,8 +142,10 @@ void askBets(Game *game){
     if(game->nGiocatori == 1){
         while(1){
             if(game->giocatori[1].money > 0){
+                // chiede la puntata finché non viene inserito un valore valido
                 printf("%s, fai la tua puntata: ", game->giocatori[1].nome);
                 scanf("%d", &game->giocatori[1].bet);
+
                 if (game->giocatori[1].bet < 0 || game->giocatori[1].bet > 5) {
                     printf("Inserisci un valore compreso tra 1 e 5.\n");
                 }else if (game->giocatori[1].money < game->giocatori[1].bet) {
@@ -137,6 +163,7 @@ void askBets(Game *game){
                 printf("%s: ", game->giocatori[giocatore].nome);
                 scanf("%d", &game->giocatori[giocatore].bet);
 
+                // controllo valore inserito
                 if (game->giocatori[giocatore].bet < 0 || game->giocatori[giocatore].bet > 5) {
                     printf("Inserisci un valore compreso tra 1 e 5.\n");
                 } else if (game->giocatori[giocatore].money < game->giocatori[giocatore].bet) {
@@ -214,7 +241,6 @@ void pescaCarta(FILE *mazzo, char carta[]){
     char strFile[NOMEGIOCATOREMAXLEN] = {'a'};
     int numFile;
     char segnale;
-    int correctCard = 1;
 
     srand(time(NULL));
 
@@ -258,9 +284,9 @@ void pescaCarta(FILE *mazzo, char carta[]){
 
 /*
  * 1. distribuisciCarte
- * 2.
- * 3.
- * 4.
+ * 2. prima distribuzione di carte per la manche, da a ogni giocatore due carte pescate casualmente e nasconde la seconda del banco
+ * 3. riceve la struttura principale del gioco
+ * 4. void
  */
 void distribuisciCarte(FILE *mazzo, Game *game){
     char carta[3];  // stringa contenente i due caratteri che indicano la carta
@@ -289,7 +315,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
                 printf("\n");
                 // la memorizzo nell'array
                 updatePlayerPoints(game, cardValueOf(carta), giocatore);
-                if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;         //  NON VAAAAAA
+                if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;
             }
 
             sleep(1);   // per non far estrarre le stesse carte
@@ -320,11 +346,11 @@ void printCard(char carta[3]){
 
 /*
  * 1. cardValueOf
- * 2.
- * 3.
- * 4.
+ * 2. restituisce il valore della carta come parametro
+ * 3. riceve una carta
+ * 4. restituisce il valore della carta ricevuta
  */
-int cardValueOf(char carta[2]){
+int cardValueOf(char carta[3]){
     if(carta[0] == 'J' || carta[0] == 'Q' || carta[0] == 'K' || carta[0] == 'D') return 10;
     else if(carta[0] == 'A') return 1;
     else return atoi(&carta[0]);
@@ -353,26 +379,26 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
  * 4. void
  */
 void checkBlackjackAtFirstManche(Game *game){
-    // per ogni giocatore, se hanno ottenuto un punteggio uguale a 21, con solo due carte hanno fatto sicuramente blackjack
-    for(int giocatore = 0; giocatore < game->nGiocatori; ++giocatore) {
-        if(game->giocatori[giocatore].punteggio == 21 && game->giocatori[giocatore].manyPlayerCards == 2){
-            game->giocatori[giocatore].punteggio = -1;
+    // i giocatori che hanno ottenuto un punteggio uguale a 21 alla prima distribuzione di carte hanno fatto blackjack
+    for(int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
+        if(game->giocatori[giocatore].punteggio == 21){
+            game->giocatori[giocatore].punteggio = BLACKJACK;
         }
     }
 
     // gestire puntate se il banco ha fatto blackjack
-    if(game->giocatori[0].punteggio == -1){
-        dealerBlackjackAtFirstManche(game);
+    if(game->giocatori[0].punteggio == BLACKJACK){
+        dealerBlackjack(game);
     }
 }
 
 /*
- * 1.
- * 2.
- * 3.
- * 4.
+ * 1. dealerBlackjack
+ * 2. verifica se il banco ha fatto blackjack e nel caso gestisce le puntate
+ * 3. riceve la struttura principale del gioco
+ * 4. void
  */
-void dealerBlackjackAtFirstManche(Game *game){
+void dealerBlackjack(Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio == -1){
             printf("%s hai pareggiato.\n", game->giocatori[giocatore].nome);
@@ -382,12 +408,12 @@ void dealerBlackjackAtFirstManche(Game *game){
 }
 
 /*
- * 1.
- * 2.
- * 3.
- * 4.
+ * 1. printEveryPlayersPoints
+ * 2. stampa il punteggio di ogni giocatore
+ * 3. riceve la struttura principale del gioco
+ * 4. void
  */
-void printMorePlayersPoints(Game *game){
+void printEveryPlayersPoints(Game *game){
     for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
         printf("%s: ", game->giocatori[giocatore].nome);
         printPlayerPoints(game, giocatore);
@@ -396,10 +422,10 @@ void printMorePlayersPoints(Game *game){
 }
 
 /*
- * 1.
- * 2.
- * 3.
- * 4.
+ * 1. printPlayerPoints
+ * 2. stampa il punteggio del giocatore indicato
+ * 3. riceve la struttura principale del gioco e il numero del giocatore di cui stampare i punti
+ * 4. void
  */
 void printPlayerPoints(const Game *game, int giocatore) {
     if(game->giocatori[giocatore].punteggio == -1){
@@ -414,13 +440,18 @@ void printPlayerPoints(const Game *game, int giocatore) {
         }else{
             printf("%d", game->giocatori[giocatore].punteggio + 10);
         }
+    }else if(game->giocatori[giocatore].manyPlayerCards == 1){
+        printf("%d + carta nascosta", game->giocatori[giocatore].punteggio);
     }else{
         printf("%d / %d", game->giocatori[giocatore].punteggio, game->giocatori[giocatore].punteggio + 10);
     }
 }
 
 /*
- *
+ * 1. askAndExecuteAction
+ * 2. chiede a ogni giocatore che mossa fare, se stare o chiedere carta ed esegue di conseguenza le funzioni dedicate
+ * 3. riceve il file del mazzo di carte e la struttura principale del gioco
+ * 4. void
  */
 void askAndExecuteAction(FILE *mazzo, Game *game){
     char answer;
