@@ -511,7 +511,7 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
  * 3. riceve l'array con il punteggio e il numero dei giocatori
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
-int checkPoints(Game *game){
+int checkPlayersPoints(Game *game){
     if(game->giocatori[0].punteggio > 21) return 1;  // se il banco ha sballato restituisce 1
 
     // controlla il punteggio di tutti i giocatori e imposta -2 se ha sballato
@@ -523,6 +523,13 @@ int checkPoints(Game *game){
     }
     return 0;
 }
+
+void checkPointsOf(Game *game, int giocatore){
+    if(game->giocatori[giocatore].punteggio > 21){
+        game->giocatori[giocatore].punteggio = SBALLATO;
+    }
+}
+
 
 /*
  *
@@ -571,13 +578,18 @@ bool hasDealerToPlay(Game *game) {
 void dealerPlays(FILE *mazzo, Game *game){
     char carta[3];
 
+    printf("Seconda carta del banco: ");
     printCard(game->dealerSecondCard);
     updatePlayerPoints(game, cardValueOf(game->dealerSecondCard), 0);
 
     printf("\n");
 
     while(game->giocatori[0].punteggio < 17){
-        printf("Il banco pesca: ");
+        printf("\nBanco: ");
+        printPlayerPoints(game, 0);
+        printf(" punti");
+
+        printf("\nIl banco pesca: ");
         sleep(1);   // suspense
         pescaCarta(mazzo, carta);
         printCard(carta);
@@ -592,18 +604,24 @@ void giveRevenue(Game *game){
         if( game->giocatori[giocatore].bet == 0){
             continue;   // ignora tutte le righe successive e ricomincia il ciclo
         }
-        if(game->giocatori[giocatore].punteggio == BLACKJACK){
-            if(game->giocatori[0].punteggio == BLACKJACK){
+        if(game->giocatori[giocatore].punteggio == BLACKJACK){      // se giocatore ha fatto blackjack
+            if(game->giocatori[0].punteggio == BLACKJACK){      // se anche il banco ha fatto blackjack hanno pareggiato
                 game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
-            }else{
+                printf("%s: Blackjack pareggiato", game->giocatori[giocatore].nome);
+            }else{  // altrimenti ha vinto x2.5
                 game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.5f;
+                printf("%s: Blackjack, hai vinto %f soldi", game->giocatori[giocatore].nome, (float)game->giocatori[giocatore].bet * 2.5f);
             }
-        }else if(game->giocatori[giocatore].punteggio > game->giocatori[0].punteggio){
+        }else if(game->giocatori[giocatore].punteggio == SBALLATO){     // se giocatore ha sballato
+            // non restituisce la puntata
+        }else if(game->giocatori[giocatore].punteggio > game->giocatori[0].punteggio){  // punteggio giocatore > punteggio banco
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.0f;
-        }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){
+            printf("%s: vinto", game->giocatori[giocatore].nome);
+        }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){     // pareggio tra banco e giocatore
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
-        }else if(game->giocatori[giocatore].punteggio != SBALLATO && game->giocatori[giocatore].punteggio == SBALLATO){
-            game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
+            printf("%s: pareggio", game->giocatori[giocatore].nome);
+        }else{  // punteggio giocatore < punteggio banco
+            printf("%s: perso", game->giocatori[giocatore].nome);
         }
     }
 }
