@@ -1,6 +1,8 @@
 #include <stdbool.h>
 #include <unistd.h> // libreria per sleep()
 #include <ctype.h>
+#include <time.h>
+#include <string.h>
 
 #define NOMEGIOCATOREMAXLEN 20
 #define NGIOCATORIMAX 6
@@ -29,11 +31,12 @@ typedef struct{
 void checkBlackjackAtFirstManche(Game *game);
 void distribuisciCarte(FILE *mazzo, Game *game);
 void askBets(Game *game);
-int checkPoints(Game *game);
+int checkPlayersPoints(Game *game);
 void printEveryPlayersPoints(Game *game);
+void printPlayerPoints(const Game *game, int giocatore);
 void updatePlayerPoints(Game *game, int cardValue, int player);
 int askPlayersName(Game * game);
-void printPlayersName(Game *game);
+// void printPlayersName(Game *game);
 bool keepPlaying();
 void riempiFileMazzo(FILE *mazzoCarte);
 void pescaCarta(FILE *mazzo, char carta[]);
@@ -48,3 +51,4 @@ void giveRevenue(Game *game);
 void printMoney(Game *game);
 bool hasDealerToPlay(Game *game);
 void resetPlayersPoints(Game *game);
+void checkPointsOf(Game *game, int giocatore);

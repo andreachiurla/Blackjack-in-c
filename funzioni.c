@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <time.h>   // utilizzo di rand() e srand()
 
-void printPlayerPoints(const Game *game, int giocatore);
-
 /*
  * 1. askPlayersName
  * 2. richiede quanti nome saranno presenti nella partita e poi i rispettivi nomi, controllando che non ne vengano inseriti di uguali
@@ -93,7 +91,7 @@ void setMoney(Game *game){
  * 4. void
  */
 void resetPlayersPoints(Game *game) {
-    for (int giocatore = 0; giocatore < game->nGiocatori; ++giocatore) {
+    for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
         game->giocatori[giocatore].punteggio = 0;
         game->giocatori[giocatore].bet = 0;
         game->giocatori[giocatore].done = false;
@@ -370,6 +368,7 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
     // incremento la quantità di carte che ha il giocatore
     game->giocatori[player].manyPlayerCards++;
     // printf("updatePlayerPoints: punteggio=%d, manyPlayerCards=%d\n", game->giocatori[player].punteggio, game->giocatori[player].manyPlayerCards);
+    checkPlayersPoints(game);
 }
 
 /*
@@ -414,10 +413,12 @@ void dealerBlackjack(Game *game){
  * 4. void
  */
 void printEveryPlayersPoints(Game *game){
-    for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
-        printf("%s: ", game->giocatori[giocatore].nome);
-        printPlayerPoints(game, giocatore);
-        printf("\n");
+    for (int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore){
+        if(game->giocatori[giocatore].bet != 0 || giocatore == 0){
+            printf("%s: ", game->giocatori[giocatore].nome);
+            printPlayerPoints(game, giocatore);
+            printf("\n");
+        }
     }
 }
 
@@ -492,7 +493,7 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
                     }
                 }
                 // sistema i punteggi dei giocatori
-                checkPoints(game);
+                checkPlayersPoints(game);
                 // finché il punteggio non supera 21 continua a chiedere
                 if(game->giocatori[giocatore].punteggio == SBALLATO || game->giocatori[giocatore].punteggio == BLACKJACK || game->giocatori[giocatore].punteggio == 21 || game->giocatori[giocatore].punteggio > 21){
                     game->giocatori[giocatore].done = true;
@@ -506,9 +507,9 @@ void askAndExecuteAction(FILE *mazzo, Game *game){
 }
 
 /*
- * 1. checkPoints
+ * 1. checkPlayersPoints
  * 2. controlla tutti i punteggio dei giocatori e a quelli che hanno sballato viene impostato il punteggio a -2 e il giocatore verrà riconosciuto come fuori dalla manche.
- * 3. riceve l'array con il punteggio e il numero dei giocatori
+ * 3. riceve la struttura principale del gioco
  * 4. se il banco ha sballato (punteggio > 21) restituisce 1 (manche finita), altrimenti 0
  */
 int checkPlayersPoints(Game *game){
@@ -532,7 +533,10 @@ void checkPointsOf(Game *game, int giocatore){
 
 
 /*
- *
+ * 1. actionPrendiCarta
+ * 2. se un giocatore decide di prendere carta viene chiamata questa funzione che pesca carta e fa altri controlli
+ * 3. riceve il puntatore al mazzo, la struttura principale del gioco e il numero del giocatore che vuole pescare
+ * 4. void
  */
 void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     char carta[3];
@@ -556,10 +560,10 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
 }
 
 /*
- * 1.
- * 2.
- * 3.
- * 4.
+ * 1. hasDealerToPlay
+ * 2. se tutti hanno sballato non c'è bisogno che il banco giochi, questa funzione stabilisce se deve essere chiamata la funzione del banco che gioca
+ * 3. riceve la struttura principale del gioco
+ * 4. restituisce un booleano. false se tutti hanno sballato e true in caso contrario
  */
 bool hasDealerToPlay(Game *game) {
     int manySballato = 0;
@@ -573,7 +577,10 @@ bool hasDealerToPlay(Game *game) {
 }
 
 /*
- *
+ * 1. dealerPlays
+ * 2. dopo che hanno giocato tutti i giocatori, gioca il banco e pesca finché il suo punteggio è inferiore a 17
+ * 3. riceve il puntatore al file del mazzo e la struttura principale del gioco
+ * 4. void
  */
 void dealerPlays(FILE *mazzo, Game *game){
     char carta[3];
@@ -599,8 +606,15 @@ void dealerPlays(FILE *mazzo, Game *game){
     }
 }
 
+/*
+ * 1. giveRevenue
+ * 2. restituisce le puntate in base al risultato della manche e stampa il risultato di ogni giocatore
+ * 3. riceve la struttura principale del gioco
+ * 4. void
+ */
 void giveRevenue(Game *game){
-    for (int giocatore = 1; giocatore < game->nGiocatori; ++giocatore) {
+    // ciclo che controlla ogni giocatore e restituisce la puntata in base al risultato
+    for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if( game->giocatori[giocatore].bet == 0){
             continue;   // ignora tutte le righe successive e ricomincia il ciclo
         }
@@ -626,6 +640,12 @@ void giveRevenue(Game *game){
     }
 }
 
+/*
+ * 1. printMoney
+ * 2. stampa i soldi di ogni giocatore
+ * 3. riceve la struttura principale del gioco
+ * 4. void
+ */
 void printMoney(Game *game){
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         printf("%s hai %.1f soldi\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].money);

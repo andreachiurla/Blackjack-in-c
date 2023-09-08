@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include "funzioni.h"
 
-#include <time.h>
-#include <string.h>
-
 // DA FARE: resettare il file del mazzo quando tutte le carte sono state pescate
 
 int main() {
@@ -57,7 +54,7 @@ int main() {
 
         askAndExecuteAction(mazzoCarte, &game);
 
-        if(checkPoints(&game) == 1) {
+        if(checkPlayersPoints(&game) == 1) {
             printf("Il banco ha sballato");
         }
         printf("\n");
@@ -69,6 +66,8 @@ int main() {
             dealerPlays(mazzoCarte, &game);
         }
         printf("\n");
+
+        checkPointsOf(&game, 0);
 
         printEveryPlayersPoints(&game);
         printf("\n");
