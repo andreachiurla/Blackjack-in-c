@@ -17,7 +17,9 @@ int askPlayersName(Game * game){
 
     // chiede il numero di nome
     while(1){
-        printf("Quanti giocatori? ");
+        printf(BGRN);
+        printf("Quanti giocatori (max 6)? ");
+        printf(DEFAULT_COLOR);
 
         // uso la fgets per evitare problemi e bug con la scanf
         fgets(strIn, 30, stdin);
@@ -27,26 +29,37 @@ int askPlayersName(Game * game){
             if(nGiocatori > 0 && nGiocatori < 7){
                 break;
             }else{
-            printf("Per favore, inserire un valore valido.\n");
+                printf("Per favore, inserire un valore valido.\n");
             }
         }else{
-            printf("Per favore, inserire un valore valido.\n");
+            printf("Per favore, inserire un valore compreso tra 1 e 6.\n");
         }
     }
 
     // se parteciperà un solo giocatore non vengono effettuati controlli
     if(nGiocatori == 1){
+        printf(BGRN);
         printf("Inserire il nome del giocatore: ");
+        printf(DEFAULT_COLOR);
+
         memset(game->giocatori[1].nome, 0, NOMEGIOCATOREMAXLEN);
         fgets(game->giocatori[1].nome, NOMEGIOCATOREMAXLEN, stdin);
     }else{
         // nel caso ci sia più di un giocatore entra nel ciclo che chiede il nome e controlla che non sia uguale a uno già inserito
+        printf(BGRN);
         printf("\nInserire il nome di ciascun giocatore.\n");
+        printf(DEFAULT_COLOR);
+
         while(temp <= nGiocatori){
             printf("Giocatore %d: ", temp);
             memset(game->giocatori[temp].nome, 0, NOMEGIOCATOREMAXLEN);     // imposta tutto a 0
             fgets(game->giocatori[temp].nome, NOMEGIOCATOREMAXLEN, stdin);
             // printf("Immesso: %s\n", game->giocatori[temp].nome);     // DEBUG
+
+            if(!strcmp(game->giocatori[temp].nome, "\n")){   // se non ha inserito niente non è valido
+                temp--;
+                printf("Non è stato inserito niente, per favore inserire un nome\n");
+            }
 
             // se è stato appena chiesto il nome al primo giocatore non vengono effettuati controlli
             if(temp == 1) {
@@ -141,7 +154,10 @@ void askBets(Game *game){
         while(1){
             if(game->giocatori[1].money > 0){
                 // chiede la puntata finché non viene inserito un valore valido
-                printf("%s, fai la tua puntata: ", game->giocatori[1].nome);
+                printf(BGRN);
+                printf("%s, fai la tua puntata (min 1 max 5): ", game->giocatori[1].nome);
+                printf(DEFAULT_COLOR);
+
                 scanf("%d", &game->giocatori[1].bet);
 
                 if (game->giocatori[1].bet < 0 || game->giocatori[1].bet > 5) {
@@ -155,7 +171,10 @@ void askBets(Game *game){
             }
         }
     }else{
-        printf("Fate la vostra puntata.\n");
+        printf(BGRN);
+        printf("Fate la vostra puntata. (min 1 max 5)\n");
+        printf(DEFAULT_COLOR);
+
         for(int giocatore = 1; giocatore <= game->nGiocatori;){
             if(game->giocatori[giocatore].money > 0) {  // chiede bet solo se gli rimangono dei soldi
                 printf("%s: ", game->giocatori[giocatore].nome);
@@ -188,6 +207,9 @@ void askBets(Game *game){
 void riempiFileMazzo(FILE *mazzoCarte){
     int seme = 1;  // valore che si resetta ogni cambio di seme (ogni 13 carte)
     int mazzo = 1;  // valore che si resetta al cambio del mazzoCarte (dopo 54 carte)
+
+    srand(time(NULL));
+
     for (int i = 1; i <= 104; ++i, ++seme) {
 
         // cambio di seme
@@ -221,10 +243,45 @@ void riempiFileMazzo(FILE *mazzoCarte){
         if(mazzo == 3) fprintf(mazzoCarte, "C");
         if(mazzo == 4) fprintf(mazzoCarte, "P");
 
-        fprintf(mazzoCarte, "  ");
+        fprintf(mazzoCarte, " -");
 
         fprintf(mazzoCarte, "\n");
     }
+}
+
+/*
+ * 1. areAllCardsDrew
+ * 2. controlla se tutte le carte del mazzo sono state pescate, nel caso, toglie da tutte le carte il segno che indica che sono state pescate
+ * 3. riceve la struttura principale del gioco
+ * 4. void
+ */
+void areAllCardsDrew(FILE *mazzo){
+    char sign;
+    int cardsDrew = 0;
+
+    // ciclo che controlla se sono state pescate tutte
+    // printf("Mazzo: ");
+    fseek(mazzo, 7, SEEK_SET);
+    for (int riga = 1; riga <= 104; ++riga) {
+        sign = fgetc(mazzo);
+        // printf("%d%c", riga%10, sign);
+        if(sign == '$'){
+            cardsDrew++;
+        }
+        fseek(mazzo, +8, SEEK_CUR);
+    }
+    // printf("\n");
+
+    // ciclo che se sono state pescate tutte toglie il simbolo
+    if(cardsDrew == 104){
+        printf("MISCHIANDO CARTE..\n");
+        fseek(mazzo, 7, SEEK_SET);
+        for (int riga = 0; riga <= 104; ++riga) {
+            fprintf(mazzo, "-");
+            fseek(mazzo, +8, SEEK_CUR);
+        }
+    }
+
 }
 
 /*
@@ -234,18 +291,18 @@ void riempiFileMazzo(FILE *mazzoCarte){
  * 3. riceve una stringa e il puntatore al file del mazzo
  * 4. void
  */
-void pescaCarta(FILE *mazzo, char carta[]){
+void pescaCartaOld(FILE *mazzo, char carta[]){
     int numRandom;
     char strFile[NOMEGIOCATOREMAXLEN] = {'a'};
     int numFile;
     char segnale;
 
-    srand(time(NULL));
+    areAllCardsDrew(mazzo); // prima di pescare controllo se tutte le carte sono già state pescate (drew)
 
     // porto il puntatore all'inizio del file
     fseek(mazzo, 0, SEEK_SET);
 
-    numRandom = rand() % 103 + 1;   // trovare numero casuale tra 1 e 104
+    numRandom = rand() % 104 + 1;   // trovare numero casuale tra 1 e 104
 
     for (int i = 0; !feof(mazzo); ++i) {
 
@@ -260,13 +317,58 @@ void pescaCarta(FILE *mazzo, char carta[]){
             // controllo della presenza del segnale
             fseek(mazzo, +4, SEEK_CUR);
             segnale = fgetc(mazzo);
+            printf("Trovato segnale %d %d %c\n", numRandom, segnale, segnale);
             if (segnale != '$') break;  // se non c'è il segnale interrompe
             else{
-                numRandom = rand() % 103 + 1;
+                numRandom = rand() % 104 + 1;
                 i = 0;
                 fseek(mazzo, 0, SEEK_SET);
             }
             break;
+        }
+
+    }
+
+    // associo alla stringa "carta" i due caratteri indicativi della carta pescata. (4P -> 4 di picche)
+    fseek(mazzo, numRandom*9-5, SEEK_SET);
+    fgets(carta, 3, mazzo);
+
+    // aggiungo un carattere che indica che quella carta è già stata pescata
+    fseek(mazzo, numRandom*9-2, SEEK_SET);
+    fprintf(mazzo, "$");
+}
+
+void pescaCarta(FILE *mazzo, char carta[]){
+    int numRandom;
+    char strFile[NOMEGIOCATOREMAXLEN] = {'a'};
+    int numFile;
+    char segnale;
+
+    areAllCardsDrew(mazzo); // prima di pescare controllo se tutte le carte sono già state pescate (drew)
+
+    // porto il puntatore all'inizio del file
+    fseek(mazzo, 0, SEEK_SET);
+
+    int numRiga;
+    char cartaLetta[4];
+    char segno;
+    bool found = false;
+    while ( ! found) {
+        numRandom = rand() % 104 + 1;   // trovare numero casuale tra 1 e 104
+
+        fseek(mazzo, (numRandom - 1)*9, SEEK_SET);
+        fscanf(mazzo, "%d %s %c", &numRiga, cartaLetta, &segno);
+        // printf("Letto riga: %d carta: %s segno: %c\n", numRiga, cartaLetta, segno);
+
+        // se ha trovato la riga
+        if (numRiga == numRandom) {
+            // controllo della presenza del segnale
+            if (segno != '$') {
+                // printf("Trovato libero %d %d %c\n", numRandom, segnale, segnale);
+                found = true;
+            } else{
+                // printf("Trovato impegnato %d riprovo\n", numRandom);
+            }
         }
 
     }
@@ -291,6 +393,10 @@ void distribuisciCarte(FILE *mazzo, Game *game){
 
     //printf("Numero giocatori: %d\n", game->nGiocatori);   // debug
 
+    printf(BGRN);
+    printf("Distribuzione carte:\n");
+    printf(DEFAULT_COLOR);
+
     for(int giro = 1; giro <= 2; giro++) {
         for(int giocatore = 0; giocatore <= game->nGiocatori; giocatore++) {
             // se il giocatore non ha puntato non viene considerato
@@ -306,11 +412,11 @@ void distribuisciCarte(FILE *mazzo, Game *game){
             // stampo la carta uscita se non è la seconda carta del banco
             if(giro == 2 && giocatore == 0){
                 strcpy(game->dealerSecondCard, carta);
-                printf("*seconda carta del banco nascosta*\n");
+                printf("*seconda carta del banco nascosta*");
             }else{
-                printf("%s: ", game->giocatori[giocatore].nome);
+                printf("%s:\t\t", game->giocatori[giocatore].nome);
                 printCard(carta);
-                printf("\n");
+                //printf("\n");
                 // la memorizzo nell'array
                 updatePlayerPoints(game, cardValueOf(carta), giocatore);
                 if(carta[0] == 'A') game->giocatori[giocatore].isAsso = 1;
@@ -326,10 +432,12 @@ void distribuisciCarte(FILE *mazzo, Game *game){
 /*
  * 1. printCard
  * 2. stampa il valore e il seme della carta
- * 3. riceve i due caratteri della carta (valore e seme)
+ * 3. riceve la carta da stampare
  * 4. void
  */
 void printCard(char carta[3]){
+    printf(YEL);
+
     // stampa valore
     if(carta[0] == 'D') printf("10 di ");
     else printf("%c di ", carta[0]);
@@ -340,6 +448,8 @@ void printCard(char carta[3]){
     else if(carta[1] == 'C') printf("cuori");
     else if(carta[1] == 'P') printf("picche");
     else printf("Seme sbagliato: %c", carta[1]);
+
+    printf(DEFAULT_COLOR);
 }
 
 /*
@@ -356,8 +466,8 @@ int cardValueOf(char carta[3]){
 
 /*
  * 1. updatePlayerPoints
- * 2. aggiorna le variabili che indicano la situazione della manche del giocatore
- * 3. riceve l'array con i punteggio dei nome, il numero del giocatore da aggiornare, il valore della carta e l'array che indica se ha due carte uguali (per dividere)
+ * 2. aggiorna il punteggio del giocatore che viene indicato con la carta come parametro
+ * 3. riceve la struttura principale del gioco, il valore della carta e il giocatore da aggiornare
  * 4. void
  */
 void updatePlayerPoints(Game *game, int cardValue, int player) {
@@ -374,21 +484,26 @@ void updatePlayerPoints(Game *game, int cardValue, int player) {
 /*
  * 1. checkBlackjackAtFirstManche
  * 2. controlla tutti i giocatori e vede se hanno fatto blackjack, controllando se ha due carte e il suo punteggio equivale a 21
- * 3. riceve l'array che indica quante carte hanno i nome, l'array con i punteggio e quanti nome ci sono
+ * 3. riceve la struttura principale del gioco
  * 4. void
  */
-void checkBlackjackAtFirstManche(Game *game){
+bool checkBlackjackAtFirstManche(Game *game){
     // i giocatori che hanno ottenuto un punteggio uguale a 21 alla prima distribuzione di carte hanno fatto blackjack
     for(int giocatore = 0; giocatore <= game->nGiocatori; ++giocatore) {
-        if(game->giocatori[giocatore].punteggio == 21){
+        if(game->giocatori[giocatore].punteggio == 11 && game->giocatori[giocatore].isAsso == true){
             game->giocatori[giocatore].punteggio = BLACKJACK;
         }
     }
 
     // gestire puntate se il banco ha fatto blackjack
-    if(game->giocatori[0].punteggio == BLACKJACK){
+    if(cardValueOf(game->dealerSecondCard) == 1 && game->giocatori[0].punteggio + 11 == 21){
         dealerBlackjack(game);
+        return true;
+    }else if(cardValueOf(game->dealerSecondCard) == 10 && game->giocatori[0].punteggio == 1){
+        dealerBlackjack(game);
+        return true;
     }
+    return false;
 }
 
 /*
@@ -398,10 +513,13 @@ void checkBlackjackAtFirstManche(Game *game){
  * 4. void
  */
 void dealerBlackjack(Game *game){
+    printf(MAG);
+    printf("Il banco ha fatto blackjack\n");
+    printf(DEFAULT_COLOR);
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
         if(game->giocatori[giocatore].punteggio == -1){
             printf("%s hai pareggiato.\n", game->giocatori[giocatore].nome);
-            game->giocatori[giocatore].money += game->giocatori[giocatore].bet;
+            game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
         }
     }
 }
@@ -525,12 +643,19 @@ int checkPlayersPoints(Game *game){
     return 0;
 }
 
-void checkPointsOf(Game *game, int giocatore){
-    if(game->giocatori[giocatore].punteggio > 21){
+/*
+ * 1. checkPointsOf
+ * 2. controlla il punteggio del giocatore indicato e modifica il punteggio (blackjack e sballato)
+ * 3. riceve la struttura principale del gioco e il numero del giocatore da controllare
+ * 4. void
+ */
+void checkPointsOf(Game *game, int giocatore) {
+    if (game->giocatori[giocatore].punteggio > 21) {
         game->giocatori[giocatore].punteggio = SBALLATO;
+    } else if (game->giocatori[giocatore].punteggio == 21 && game->giocatori[giocatore].manyPlayerCards == 2){
+        game->giocatori[giocatore].punteggio = BLACKJACK;
     }
 }
-
 
 /*
  * 1. actionPrendiCarta
@@ -555,24 +680,23 @@ void actionPrendiCarta(FILE *mazzo, Game *game, int giocatore){
     }
 
     updatePlayerPoints(game, cardValue, giocatore);
-
-    //printf("%s, hai %d punti\n", game->giocatori[giocatore].nome, game->giocatori[giocatore].punteggio);
 }
 
 /*
  * 1. hasDealerToPlay
- * 2. se tutti hanno sballato non c'è bisogno che il banco giochi, questa funzione stabilisce se deve essere chiamata la funzione del banco che gioca
+ * 2. se tutti hanno sballato o hanno fatto blackjack, non c'è bisogno che il banco giochi, questa funzione stabilisce se deve essere chiamata la funzione del banco che gioca
  * 3. riceve la struttura principale del gioco
  * 4. restituisce un booleano. false se tutti hanno sballato e true in caso contrario
  */
 bool hasDealerToPlay(Game *game) {
-    int manySballato = 0;
+    int manyDone = 0;
 
+    // ciclo che controlla il punteggio di tutti i giocatori e conta i giocatori che hanno sballato e quelli che hanno fatto blackjack
     for (int giocatore = 1; giocatore <= game->nGiocatori; ++giocatore) {
-        if(game->giocatori[giocatore].punteggio == SBALLATO) manySballato++;
+        if(game->giocatori[giocatore].punteggio == SBALLATO || game->giocatori[giocatore].punteggio == BLACKJACK) manyDone++;
     }
 
-    if(manySballato == game->nGiocatori) return false;
+    if(manyDone == game->nGiocatori) return false;
     else return true;
 }
 
@@ -584,23 +708,34 @@ bool hasDealerToPlay(Game *game) {
  */
 void dealerPlays(FILE *mazzo, Game *game){
     char carta[3];
+    int dealerSecondCardValue;
 
+    // stampa la carta del banco e aggiorna il punteggio del banco
     printf("Seconda carta del banco: ");
     printCard(game->dealerSecondCard);
-    updatePlayerPoints(game, cardValueOf(game->dealerSecondCard), 0);
+    if((dealerSecondCardValue = cardValueOf(game->dealerSecondCard)) == 1){     // se è un asso vale 11 e non 1. blackjack
+        dealerSecondCardValue = 11;
+    }
+    updatePlayerPoints(game, dealerSecondCardValue, 0);
+
+    sleep(1);
 
     printf("\n");
 
+    // ciclo che pesca una carta finché il punteggio del banco non è maggiore o uguale a 17
     while(game->giocatori[0].punteggio < 17){
+        // stampa punteggio
         printf("\nBanco: ");
         printPlayerPoints(game, 0);
         printf(" punti");
 
+        // pesca carta
         printf("\nIl banco pesca: ");
         sleep(1);   // suspense
         pescaCarta(mazzo, carta);
         printCard(carta);
 
+        // aggiorno punteggio
         updatePlayerPoints(game, cardValueOf(carta), 0);
         printf("\n");
     }
@@ -621,23 +756,33 @@ void giveRevenue(Game *game){
         if(game->giocatori[giocatore].punteggio == BLACKJACK){      // se giocatore ha fatto blackjack
             if(game->giocatori[0].punteggio == BLACKJACK){      // se anche il banco ha fatto blackjack hanno pareggiato
                 game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
-                printf("%s: Blackjack pareggiato", game->giocatori[giocatore].nome);
+                printf("%s: Blackjack pareggiato\n", game->giocatori[giocatore].nome);
             }else{  // altrimenti ha vinto x2.5
                 game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.5f;
-                printf("%s: Blackjack, hai vinto %f soldi", game->giocatori[giocatore].nome, (float)game->giocatori[giocatore].bet * 2.5f);
+                printf("%s: Blackjack, hai vinto %f soldi\n", game->giocatori[giocatore].nome, (float)game->giocatori[giocatore].bet * 2.5f);
             }
         }else if(game->giocatori[giocatore].punteggio == SBALLATO){     // se giocatore ha sballato
             // non restituisce la puntata
+        }else if(game->giocatori[0].punteggio == BLACKJACK){
+            printf(RED);
+            printf("%s: perso\n", game->giocatori[giocatore].nome);
+            printf(DEFAULT_COLOR);
         }else if(game->giocatori[giocatore].punteggio > game->giocatori[0].punteggio){  // punteggio giocatore > punteggio banco
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet * 2.0f;
-            printf("%s: vinto", game->giocatori[giocatore].nome);
+            printf(GRN);
+            printf("%s: vinto %.1f soldi\n", game->giocatori[giocatore].nome, (float)game->giocatori[giocatore].bet * 2.0f);
+            printf(DEFAULT_COLOR);
         }else if(game->giocatori[giocatore].punteggio == game->giocatori[0].punteggio){     // pareggio tra banco e giocatore
             game->giocatori[giocatore].money += (float)game->giocatori[giocatore].bet;
-            printf("%s: pareggio", game->giocatori[giocatore].nome);
+            printf("%s: pareggio\n", game->giocatori[giocatore].nome);
         }else{  // punteggio giocatore < punteggio banco
-            printf("%s: perso", game->giocatori[giocatore].nome);
+            printf(RED);
+            printf("%s: perso\n", game->giocatori[giocatore].nome);
+            printf(DEFAULT_COLOR);
         }
     }
+
+    printf("\n");
 }
 
 /*

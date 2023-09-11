@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include "funzioni.h"
 
-// DA FARE: resettare il file del mazzo quando tutte le carte sono state pescate
-
 int main() {
     printf("Blackjack by Chiurla Andrea\n\n");
 
     Game game;
+    bool dealerBlackjack;
 
     FILE *mazzoCarte;                       // puntatore al file in cui vengono memorizzate le carte uscite.
     bool playing = true;                    // valore booleano usato per determinare se il gioco continua o no
@@ -23,6 +22,11 @@ int main() {
     if((mazzoCarte = fopen("mazzo.txt","r+")) == NULL) {
         printf("Errore nell'apertura del file");
         return 1;
+    }
+
+    char carta[3];
+    for (int pesco = 1; pesco <= 120; ++pesco) {
+        pescaCarta(mazzoCarte, carta);
     }
 
     // assegno alla posizione 0 dell'array dei nomi la stringa "Banco"
@@ -47,30 +51,34 @@ int main() {
         distribuisciCarte(mazzoCarte, &game);
         printf("\n");
 
-        checkBlackjackAtFirstManche(&game);
-        printEveryPlayersPoints(&game);
-
+        dealerBlackjack = checkBlackjackAtFirstManche(&game);   // se il banco ha fatto blackjack non c'è bisogno di far giocare i giocatori
         printf("\n");
 
-        askAndExecuteAction(mazzoCarte, &game);
+        if(dealerBlackjack == false){
+            printEveryPlayersPoints(&game);
 
-        if(checkPlayersPoints(&game) == 1) {
-            printf("Il banco ha sballato");
+            printf("\n");
+
+            askAndExecuteAction(mazzoCarte, &game);
+
+            if(checkPlayersPoints(&game) == 1) {
+                printf("Il banco ha sballato");
+            }
+            printf("\n");
+
+            printEveryPlayersPoints(&game);
+            printf("\n");
+
+            if(hasDealerToPlay(&game)){
+                dealerPlays(mazzoCarte, &game);
+            }
+            printf("\n");
+
+            checkPointsOf(&game, 0);
+
+            printEveryPlayersPoints(&game);
+            printf("\n");
         }
-        printf("\n");
-
-        printEveryPlayersPoints(&game);
-        printf("\n");
-
-        if(hasDealerToPlay(&game)){
-            dealerPlays(mazzoCarte, &game);
-        }
-        printf("\n");
-
-        checkPointsOf(&game, 0);
-
-        printEveryPlayersPoints(&game);
-        printf("\n");
 
         giveRevenue(&game);
 
