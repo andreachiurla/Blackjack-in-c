@@ -4,7 +4,7 @@
 int main() {
     printf("Blackjack by Chiurla Andrea\n\n");
 
-    Game game;
+    Game game;      // struttura principale del gioco
     bool dealerBlackjack;
 
     FILE *mazzoCarte;                       // puntatore al file in cui vengono memorizzate le carte uscite.
@@ -22,11 +22,6 @@ int main() {
     if((mazzoCarte = fopen("mazzo.txt","r+")) == NULL) {
         printf("Errore nell'apertura del file");
         return 1;
-    }
-
-    char carta[3];
-    for (int pesco = 1; pesco <= 120; ++pesco) {
-        pescaCarta(mazzoCarte, carta);
     }
 
     // assegno alla posizione 0 dell'array dei nomi la stringa "Banco"

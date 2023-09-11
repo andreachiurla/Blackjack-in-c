@@ -114,15 +114,6 @@ void resetPlayersPoints(Game *game) {
 }
 
 /*
- * FUNZIONE NON UTILIZZATA
-void printPlayersName(Game *game) {
-    for(int giocatore = 1; giocatore <= game->nGiocatori; giocatore++) {
-        printf("Giocatore n. %d: %s\n", giocatore, game->giocatori[giocatore].nome);
-    }
-}
-*/
-
-/*
  * 1. keepPlaying
  * 2. chiede se l'utente desidera terminare il programma o continuare a giocare
  * 3. no parametri
@@ -286,100 +277,45 @@ void areAllCardsDrew(FILE *mazzo){
 
 /*
  * 1. pescaCarta
- * 2. sceglie un numero random tra 1 e 104, il numero estratto corrisponde a una carta, se questa carta non è già uscita è il risultato che rimane nella stringa "carta"
- *    due funzioni di questo tipo eseguite di seguito non funzionano. usare sleep().
+ * 2. ciclo che trova la carta corrispondente a un numero casuale finché non ne trova una non ancora pescata
  * 3. riceve una stringa e il puntatore al file del mazzo
  * 4. void
  */
-void pescaCartaOld(FILE *mazzo, char carta[]){
+void pescaCarta(FILE *mazzo, char carta[]) {
     int numRandom;
-    char strFile[NOMEGIOCATOREMAXLEN] = {'a'};
-    int numFile;
-    char segnale;
-
-    areAllCardsDrew(mazzo); // prima di pescare controllo se tutte le carte sono già state pescate (drew)
-
-    // porto il puntatore all'inizio del file
-    fseek(mazzo, 0, SEEK_SET);
-
-    numRandom = rand() % 104 + 1;   // trovare numero casuale tra 1 e 104
-
-    for (int i = 0; !feof(mazzo); ++i) {
-
-        if (i != 0) fseek(mazzo, +6, SEEK_CUR);  // sposto il puntatore fino al valore della riga successiva
-
-        // legge il valore della riga e lo trasforma in intero
-        fgets(strFile, 4, mazzo);
-        numFile = atoi(strFile);
-
-        // se ha trovato la riga
-        if (numFile == numRandom) {
-            // controllo della presenza del segnale
-            fseek(mazzo, +4, SEEK_CUR);
-            segnale = fgetc(mazzo);
-            printf("Trovato segnale %d %d %c\n", numRandom, segnale, segnale);
-            if (segnale != '$') break;  // se non c'è il segnale interrompe
-            else{
-                numRandom = rand() % 104 + 1;
-                i = 0;
-                fseek(mazzo, 0, SEEK_SET);
-            }
-            break;
-        }
-
-    }
-
-    // associo alla stringa "carta" i due caratteri indicativi della carta pescata. (4P -> 4 di picche)
-    fseek(mazzo, numRandom*9-5, SEEK_SET);
-    fgets(carta, 3, mazzo);
-
-    // aggiungo un carattere che indica che quella carta è già stata pescata
-    fseek(mazzo, numRandom*9-2, SEEK_SET);
-    fprintf(mazzo, "$");
-}
-
-void pescaCarta(FILE *mazzo, char carta[]){
-    int numRandom;
-    char strFile[NOMEGIOCATOREMAXLEN] = {'a'};
-    int numFile;
-    char segnale;
-
-    areAllCardsDrew(mazzo); // prima di pescare controllo se tutte le carte sono già state pescate (drew)
-
-    // porto il puntatore all'inizio del file
-    fseek(mazzo, 0, SEEK_SET);
-
     int numRiga;
     char cartaLetta[4];
     char segno;
     bool found = false;
-    while ( ! found) {
+
+    areAllCardsDrew(mazzo); // prima di pescare controllo se tutte le carte sono già state pescate (drew)
+
+    // porto il puntatore all'inizio del file
+    fseek(mazzo, 0, SEEK_SET);
+
+    while (!found) {
         numRandom = rand() % 104 + 1;   // trovare numero casuale tra 1 e 104
 
-        fseek(mazzo, (numRandom - 1)*9, SEEK_SET);
+        fseek(mazzo, (numRandom - 1) * 9, SEEK_SET);
         fscanf(mazzo, "%d %s %c", &numRiga, cartaLetta, &segno);
-        // printf("Letto riga: %d carta: %s segno: %c\n", numRiga, cartaLetta, segno);
 
         // se ha trovato la riga
         if (numRiga == numRandom) {
-            // controllo della presenza del segnale
+            // verifico della presenza del segnale
             if (segno != '$') {
-                // printf("Trovato libero %d %d %c\n", numRandom, segnale, segnale);
                 found = true;
-            } else{
-                // printf("Trovato impegnato %d riprovo\n", numRandom);
             }
+
         }
 
+        // associo alla stringa "carta" i due caratteri indicativi della carta pescata. (4P -> 4 di picche)
+        fseek(mazzo, numRandom * 9 - 5, SEEK_SET);
+        fgets(carta, 3, mazzo);
+
+        // aggiungo un carattere che indica che quella carta è già stata pescata
+        fseek(mazzo, numRandom * 9 - 2, SEEK_SET);
+        fprintf(mazzo, "$");
     }
-
-    // associo alla stringa "carta" i due caratteri indicativi della carta pescata. (4P -> 4 di picche)
-    fseek(mazzo, numRandom*9-5, SEEK_SET);
-    fgets(carta, 3, mazzo);
-
-    // aggiungo un carattere che indica che quella carta è già stata pescata
-    fseek(mazzo, numRandom*9-2, SEEK_SET);
-    fprintf(mazzo, "$");
 }
 
 /*
