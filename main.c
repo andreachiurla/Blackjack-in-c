@@ -2,7 +2,7 @@
 #include "funzioni.h"
 
 int main() {
-    printf("Blackjack by Chiurla Andrea\n\n");
+    printf("Blackjack by Chiurla Andrea - 3AII (2022-23)\n\n");
 
     Game game;      // struttura principale del gioco
     bool dealerBlackjack;
