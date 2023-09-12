@@ -146,7 +146,7 @@ void askBets(Game *game){
             if(game->giocatori[1].money > 0){
                 // chiede la puntata finché non viene inserito un valore valido
                 printf(BGRN);
-                printf("%s, fai la tua puntata (min 1 max 5): ", game->giocatori[1].nome);
+                printf("%s, fai la tua puntata (min 1 max 5, 0 per non giocare): ", game->giocatori[1].nome);
                 printf(DEFAULT_COLOR);
 
                 scanf("%d", &game->giocatori[1].bet);
@@ -163,7 +163,7 @@ void askBets(Game *game){
         }
     }else{
         printf(BGRN);
-        printf("Fate la vostra puntata. (min 1 max 5)\n");
+        printf("Fate la vostra puntata. (min 1 max 5, 0 per non giocare)\n");
         printf(DEFAULT_COLOR);
 
         for(int giocatore = 1; giocatore <= game->nGiocatori;){
@@ -337,7 +337,7 @@ void distribuisciCarte(FILE *mazzo, Game *game){
         for(int giocatore = 0; giocatore <= game->nGiocatori; giocatore++) {
             // se il giocatore non ha puntato non viene considerato
             if(giocatore > 0 && game->giocatori[giocatore].bet == 0){
-                printf("Giocatore %s non gioca\n", game->giocatori[giocatore].nome);
+                printf("%s non gioca\n", game->giocatori[giocatore].nome);
                 continue;   // ignora tutte le righe successive e ricomincia il ciclo
             }
             //printf("Giocatore %d/%d giro %d\n", giocatore, game->nGiocatori, giro);   // debug

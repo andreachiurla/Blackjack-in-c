@@ -56,9 +56,6 @@ int main() {
 
             askAndExecuteAction(mazzoCarte, &game);
 
-            if(checkPlayersPoints(&game) == 1) {
-                printf("Il banco ha sballato");
-            }
             printf("\n");
 
             printEveryPlayersPoints(&game);
